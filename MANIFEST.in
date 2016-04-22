@@ -1,0 +1,2 @@
+recursive-include securetrading/data *.json
+include README.rst
