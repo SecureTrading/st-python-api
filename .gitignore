@@ -1,0 +1,8 @@
+/.eggs
+/build
+/dist
+/MANIFEST
+*.pyc
+securetrading.egg-info
+*.egg
+.tox/

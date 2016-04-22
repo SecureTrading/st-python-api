@@ -32,14 +32,14 @@ st_request.update(AUTH_example)
 st_response = st_api.process(st_request)
 
 # Process the response
-action = st_response["responsedata"]["customeroutput"]
-if action == "RESULT":
+error_code = st_response["responses"][0]["errorcode"]
+if error_code == "0":
     print("Successful transaction - more information is available in the \
 response object")
 
 else:
     print("Something went wrong. Please fix and try again. ({0}) More \
 information may be in the response object:".format(
-            st_response["responsedata"]["errormessage"]))
+            st_response["responses"][0]["errormessage"]))
 
 pprint.pprint(st_response)
