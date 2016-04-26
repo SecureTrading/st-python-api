@@ -5,8 +5,6 @@ import unittest
 from securetrading.test import abstract_test
 import glob
 import os
-import pkgutil
-import securetrading.util as util
 
 try:
     import pep8
@@ -23,11 +21,7 @@ class Test_CodeFormat(abstract_test.TestCase):
         if pep8 is not None:
             ignore_error_codes = []
 
-            loader = pkgutil.get_loader('securetrading')
-            if util._is_python_2():
-                base_path = loader.filename
-            else:
-                base_path = os.path.split(loader.path)[0]
+            base_path = self.get_package_path()
 
             test_cases = ["",
                           "test",

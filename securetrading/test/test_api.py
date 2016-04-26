@@ -39,7 +39,7 @@ class Test_Api(abstract_test.TestCase):
         connecterror = securetrading.ConnectionError
         sendrecverror = securetrading.SendReceiveError
 
-        versioninfo = "Python::{0}::1.00::{1}".format(
+        versioninfo = "Python::{0}::1.0::{1}".format(
             platform.python_version(),
             platform.platform())
         request1 = self.get_securetrading_request({})
@@ -65,7 +65,7 @@ class Test_Api(abstract_test.TestCase):
         request2_str = '{{"requestreference": "{0}",\
 "version": "1.00", "response": [{{"errorcode" : "0"}}]}}'
 
-        lib_version = "python_1.00"
+        lib_version = "python_1.0"
         msg = "{0} Maximum time reached whilst trying to connect to {1}\
 ".format(request2["requestreference"], request2["datacenterurl"])
         connection_error = connecterror("7", data=[msg])

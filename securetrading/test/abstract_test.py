@@ -3,6 +3,9 @@ import unittest
 import sys
 import securetrading
 import platform
+import pkgutil
+import securetrading.util as util
+import os
 
 
 class TestCase(unittest.TestCase):
@@ -14,6 +17,14 @@ class TestCase(unittest.TestCase):
         self.utf8_uni = self.uni.encode("utf-8")
         self.byt_uni = self.uni.encode("latin-1")
         self.mock_receive = []
+
+    def get_package_path(self):
+        loader = pkgutil.get_loader('securetrading')
+        if util._is_python_2():
+            package_path = loader.filename
+        else:
+            package_path = os.path.split(loader.path)[0]
+        return package_path
 
     def get_python_version(self):
         python_version = platform.python_version()

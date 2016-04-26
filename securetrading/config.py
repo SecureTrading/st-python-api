@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import locale
 from securetrading import util
+import securetrading
 
 
 class Config(object):
@@ -42,7 +43,7 @@ default values that can then be overridden.
         self._datacenterurl = "https://webservices.securetrading.net"
         self._http_proxy = None
         self._ssl_certificate_file = None
-        self._libraryversion = "1.00"
+        self._libraryversion = securetrading.__version__
         self._locale = "en_gb"
 
     @property

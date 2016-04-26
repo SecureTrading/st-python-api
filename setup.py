@@ -40,9 +40,7 @@ setup(
     ],
     keywords='securetrading api python',
     packages=["securetrading", "securetrading.test"],
-    package_data={'securetrading': ['data/phrasebook.json',
-                                    'data/errormessages.json',
-                                    ]},
+    include_package_data=True,
     install_requires=['requests >= 2.9.0'],
     test_suite="securetrading.test.all",
     extras_require={

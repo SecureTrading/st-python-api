@@ -30,7 +30,7 @@ phrase_book = securetrading.util.json.loads(data)
 
 
 __title__ = 'Secure Trading Python API'
-__version__ = "1.00"
+__version__ = "1.0"
 __author__ = 'Secure Trading Ltd'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2016 Secure Trading Ltd'

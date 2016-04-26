@@ -1,2 +1,4 @@
 recursive-include securetrading/data *.json
 include README.rst
+include securetrading/test/testcacert.pem
+include securetrading/test/badcacert.pem
