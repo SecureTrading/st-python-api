@@ -23,8 +23,12 @@ def get_args():
                              dest="password",
                              help="Specify webservices password.")
     args_parser.add_argument("--overridecacerts", action="store",
-                             dest="overridecacerts", default=False,
+                             dest="overridecacerts", default=None,
                              help="Overrides built-in cacerts.")
+    args_parser.add_argument("--transfersleeptime", action="store",
+                             dest="transfersleeptime", default=300, type=int,
+                             help="Sets the sleep time for parent transactions\
+ to be fully processed in seconds. Default: %(default)d")
 
     (passed_args, unittest_args) = args_parser.parse_known_args()
     return (passed_args, unittest_args)
@@ -35,8 +39,6 @@ class Module_Api(abstract_test.TestCase):
     PARENT_RESPONSES = None
     UNI = "T\r\xc2\xa3S'T(|]><[\\xG %s %% \"+N\
 \\\\&\\M\xc8.?\nTAB\t12}34{56789,:;#END"
-
-    TRANSFERSLEEPTIME = 1
 
     def __init__(self, *args, **kwargs):
         super(Module_Api, self).__init__(*args, **kwargs)
@@ -97,7 +99,10 @@ class Module_Api(abstract_test.TestCase):
             # Singleton so that it doenst get set always
             Module_Api.PARENT_RESPONSES = self.set_up_parents()
             # Sleeping to allow parent transactions to be fully processed
-            time.sleep(self.TRANSFERSLEEPTIME)
+            transfersleeptime = passed_args.transfersleeptime
+            print("Sleeping for {0:d} seconds to allow parent transactions to be\
+ fully processed".format(transfersleeptime))
+            time.sleep(transfersleeptime)
 
     def set_up_parents(self):
         parent_responses = {}
@@ -236,8 +241,7 @@ class Module_Api(abstract_test.TestCase):
         return base_values
 
     def validate(self, actuals, expecteds):
-        python_version = platform.python_version()
-        python_version = int(python_version.split(".")[0])
+        python_version = self.get_python_version()
 
         if isinstance(expecteds, dict):
             for key in expecteds.keys():
@@ -404,6 +408,9 @@ Secure Trading API",
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
+# This test generates an warning message to appear. It looks
+# like is an issue with the underlying requests library
+# https://github.com/kennethreitz/requests/issues/1882#ref-commit-5c20437
     def test_invalid_request_corrupt_cacerts_file(self):
         extra_updates = {"pan": "4000000000000812",
                          "expirymonth": "11",
