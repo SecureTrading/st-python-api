@@ -39,7 +39,7 @@ class Test_Api(abstract_test.TestCase):
         connecterror = securetrading.ConnectionError
         sendrecverror = securetrading.SendReceiveError
 
-        versioninfo = "Python::{0}::1.0.1::{1}".format(
+        versioninfo = "Python::{0}::1.0.2::{1}".format(
             platform.python_version(),
             platform.platform())
         request1 = self.get_securetrading_request({})
@@ -65,7 +65,7 @@ class Test_Api(abstract_test.TestCase):
         request2_str = '{{"requestreference": "{0}",\
 "version": "1.00", "response": [{{"errorcode" : "0"}}]}}'
 
-        lib_version = "python_1.0.1"
+        lib_version = "python_1.0.2"
         msg = "{0} Maximum time reached whilst trying to connect to {1}\
 ".format(request2["requestreference"], request2["datacenterurl"])
         connection_error = connecterror("7", data=[msg])
@@ -137,7 +137,7 @@ class Test_Api(abstract_test.TestCase):
                                        "errorcode": "0"}]}),
                       # config with new values and request overrides
                       # datacenterurl
-                      ({}, default_config, None, None, None, None, None,
+                      ([], default_config, None, None, None, None, None,
                        None,
                        {'requestreference': '',
                         'responses': [{'errorcode': '10',
@@ -152,7 +152,7 @@ Secure Trading API'},
                                       ]}
                        ),
 
-                      ({}, french_config, None, None, None, None, None,
+                      ([], french_config, None, None, None, None, None,
                        None,
                        {'requestreference': '',
                         'responses': [{'errorcode': '10',
@@ -238,6 +238,23 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
                              ]
                         }
                        ),
+                      ({"requestreference": "myref"}, default_config,
+                       request1_str.format("myref"),
+                       None,
+                       "https://webservices.securetrading.net/json/",
+                       {"alias": "",
+                        "libraryversion": lib_version,
+                        "request": [{"requestreference": "myref",
+                                     "versioninfo": versioninfo,
+                                     }],
+                        "version": "1.00"},
+                       None, None,
+                       {"requestreference": "myref",
+                        "version": "1.00",
+                        "responses": [{"errormessage": "Ok",
+                                       "errorcode": "0"
+                                       }]}),
+
                       ]
 
         http_main = st_httpclient.GenericHTTPClient._main

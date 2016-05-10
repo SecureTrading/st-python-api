@@ -12,6 +12,7 @@ from requests.exceptions import ConnectionError as RequestsConnectionError
 from requests.exceptions import RequestException
 import platform
 import time
+import sys
 
 
 class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
@@ -21,6 +22,57 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
     def setUp(self):
         config = securetrading.Config()
         self.http_client = self.client(config)
+
+    def test__get_requests_lib(self):
+        original_requests = requests
+
+        class Mock(object):
+            __version__ = "2.9.0"
+
+        mock1 = Mock()
+        mock2 = Mock()
+        mock2.__version__ = "50.2.3"
+        mock3 = Mock()
+        mock3.__version__ = "2.8.9"
+        mock4 = None
+
+        tests = [(mock1, None),
+                 (mock2, None),
+                 (mock3, securetrading.SecureTradingError),
+                 (mock4, securetrading.SecureTradingError),
+                 ]
+
+        for (mock_requests, exp_exception) in tests:
+            try:
+                sys.modules["requests"] = mock_requests
+                func = securetrading.httpclient._get_requests_lib
+                if exp_exception is None:
+                    func()
+                else:
+                    self.assertRaises(exp_exception,
+                                      func)
+            finally:
+                sys.modules["requests"] = original_requests
+
+    def test__get_client(self):
+        original_requests = securetrading.httpclient.requests
+        config = securetrading.Config()
+        request_reference = self.uni
+        httpclient = securetrading.httpclient
+
+        try:
+            securetrading.httpclient.requests = True
+            client = httpclient._get_client(request_reference, config)
+            self.assertTrue(isinstance(client,
+                                       httpclient.HTTPRequestsClient))
+
+            securetrading.httpclient.requests = False
+            self.assertRaises(securetrading.SecureTradingError,
+                              httpclient._get_client,
+                              request_reference,
+                              config)
+        finally:
+            securetrading.httpclient.requests = original_requests
 
     def test__close(self):
         self.assertRaises(NotImplementedError, self.http_client._close)

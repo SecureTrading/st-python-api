@@ -6,17 +6,25 @@ import warnings
 import sys
 import platform
 
-try:
-    import requests
-except ImportError as e:
-    requests = None
-else:
-    split_version = requests.__version__.split(".")
+
+def _get_requests_lib():
+    try:
+        import requests
+        split_version = requests.__version__.split(".")
+        requests_version = requests.__version__
+    except ImportError as e:
+        requests = None
+        split_version = ["0", "0", "0"]
+        requests_version = "Not found"
+
     requests_version = tuple(map(int, split_version))
     min_requests_version = securetrading.util.min_requests_version
     if requests_version < min_requests_version:
-        data = ["Current requests version: {0}".format(requests.__version__)]
+        data = ["Current requests version: {0}".format(requests_version)]
         raise securetrading.SecureTradingError("2", data=data)
+    return requests
+
+requests = _get_requests_lib()
 
 
 def _get_client(request_reference, config):

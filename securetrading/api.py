@@ -51,6 +51,11 @@ details
         """
         request_reference = ""
         try:
+            if type(request) == dict:
+                st_request = securetrading.Request()
+                st_request.update(request)
+                request = st_request
+
             self._verify_request(request)
             request_reference = request["requestreference"]
             info = "{0} Begin request".format(request_reference)

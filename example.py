@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import logging
 import pprint
 import securetrading
@@ -25,11 +26,9 @@ AUTH_example = {"pan": "4111111111111111",
                 "baseamount": "100",
                 "billingfirstname": "first",
                 }
-st_request = securetrading.Request()
-st_request.update(AUTH_example)
 
 # Process the request or more requests
-st_response = st_api.process(st_request)
+st_response = st_api.process(AUTH_example)
 
 # Process the response
 error_code = st_response["responses"][0]["errorcode"]
