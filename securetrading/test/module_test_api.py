@@ -333,19 +333,25 @@ class Module_Api(abstract_test.TestCase):
         self.validate(st_response["responses"], exp_raw_resp)
 
     def test_invalid_request_not_using_request_object(self):
-        data = {"requestreference": "REFERENCE"}
+        extra_updates = {"pan": "4111111111111111",
+                         "expirymonth": "11",
+                         "expiryyear": "2031",
+                         "securitycode": "123",
+                         "paymenttypedescription": "VISA",
+                         }
+
+        data = self.get_request_values("AUTH", extra_updates=extra_updates)
 
         st_response = self.st_api.process(data)
-        exp_resp_data = {"errorcode": "10",
-                         "errormessage": "Incorrect \
-usage of the Secure Trading API",
-                         "requesttypedescription": "ERROR",
+        exp_resp_data = {"errorcode": "0",
+                         "errormessage": "Ok",
+                         "acquirerresponsecode": "00",
                          }
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_invalid_request_no_requestreference(self):
-        data = {}
+    def test_invalid_request_using_invalid_request_object(self):
+        data = []
 
         st_response = self.st_api.process(data)
         exp_resp_data = {"errorcode": "10",

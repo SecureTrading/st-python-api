@@ -17,7 +17,7 @@ class Test_Request(abstract_test_stobjects.Abstract_Test_StObjects):
         os = platform.platform()
         python_version = platform.python_version()
         original_version = securetrading.__version__
-        expected = "Python::{0}::1.0.2::{1}".format(python_version, os)
+        expected = "Python::{0}::1.0.3::{1}".format(python_version, os)
         self.assertEqual(securetrading.version_info, expected)
 
     def test__set_cachetoken(self):
