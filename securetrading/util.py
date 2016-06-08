@@ -33,6 +33,6 @@ def _get_random(n, all_chars=list('0123456789abcdefghjkmnpqrtuvwxy'),
     return "".join([all_chars[ord_or_not(c) % length] for c in urandom(n)])
 
 
-def _get_errormessage(error_code, phrasebook):
-    english = securetrading.error_messages[error_code]
+def _get_errormessage(error_code, error_message, phrasebook):
+    english = securetrading.error_messages.get(error_code, error_message)
     return phrasebook.lookup(english)

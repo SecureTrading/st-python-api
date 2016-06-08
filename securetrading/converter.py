@@ -42,6 +42,7 @@ class Converter(object):
         try:
             result = securetrading.util.json.dumps(st_structure)
         except (UnicodeDecodeError, TypeError) as e:
+            # This will raise if a latin-1 encoded string is passed in.
             data = ["All types should be specified in unicode"]
             raise securetrading.ApiError("10", data=data)
         debug = "{0} Finished encoding".format(

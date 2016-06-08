@@ -6,3 +6,4 @@
 securetrading.egg-info
 *.egg
 .tox/
+requests/

@@ -79,8 +79,10 @@ details
 
         get_error_message = securetrading.util._get_errormessage
         for response in result["responses"]:
-            response["errormessage"] = get_error_message(response["errorcode"],
-                                                         self.phrasebook)
+            response["errormessage"] =\
+                get_error_message(response["errorcode"],
+                                  response.get("errormessage", ""),
+                                  self.phrasebook)
 
         securetrading.util.logger.info(info)
         return result

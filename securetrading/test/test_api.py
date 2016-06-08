@@ -39,10 +39,11 @@ class Test_Api(abstract_test.TestCase):
         connecterror = securetrading.ConnectionError
         sendrecverror = securetrading.SendReceiveError
 
-        versioninfo = "Python::{0}::1.0.3::{1}".format(
+        versioninfo = "Python::{0}::1.0.4::{1}".format(
             platform.python_version(),
             platform.platform())
         request1 = self.get_securetrading_request({})
+        request4 = self.get_securetrading_request({})
         default_config = self.get_config()
         config1 = self.get_config({"username": "test",
                                    "jsonversion": "2.00",
@@ -65,7 +66,7 @@ class Test_Api(abstract_test.TestCase):
         request2_str = '{{"requestreference": "{0}",\
 "version": "1.00", "response": [{{"errorcode" : "0"}}]}}'
 
-        lib_version = "python_1.0.3"
+        lib_version = "python_1.0.4"
         msg = "{0} Maximum time reached whilst trying to connect to {1}\
 ".format(request2["requestreference"], request2["datacenterurl"])
         connection_error = connecterror("7", data=[msg])
@@ -75,6 +76,13 @@ class Test_Api(abstract_test.TestCase):
 
         request3 = self.get_securetrading_request(
             {"requestreference": "requestreference"})
+
+        request4_dict = {"requestreference": request4["requestreference"],
+                         "versioninfo": versioninfo}
+
+        request4_str = '{{"requestreference": "{0}",\
+"version": "1.00", "response": [{{"errormessage": "GATEWAYERRMSG",\
+"errorcode" : "99"}}]}}'
 
         if python_version >= 3:
             jsonMessage = ["Expecting value: line 1 column 21 (char 20)"]
@@ -254,7 +262,20 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
                         "responses": [{"errormessage": "Ok",
                                        "errorcode": "0"
                                        }]}),
-
+                      (request4, default_config,
+                       request4_str.format(request4["requestreference"]),
+                       None,
+                       "https://webservices.securetrading.net/json/",
+                       {"alias": "",
+                        "libraryversion": lib_version,
+                        "request": [request4_dict],
+                        "version": "1.00"},
+                       None, None,
+                       {"requestreference": request4["requestreference"],
+                        "version": "1.00",
+                        "responses": [{"errormessage": "GATEWAYERRMSG",
+                                       "errorcode": "99"
+                                       }]}),
                       ]
 
         http_main = st_httpclient.GenericHTTPClient._main

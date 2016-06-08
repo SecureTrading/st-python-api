@@ -45,29 +45,34 @@ class Test_util(abstract_test.TestCase):
             self.assertFalse(util._is_python_2())
 
     def test__get_errormesage(self):
-        tests = [({}, '1', 'Generic error'),
-                 ({}, '2', "Secure Trading API requires the 'requests' \
-library"),
-                 ({}, '4', 'Send error'),
-                 ({}, '5', 'Receive error'),
-                 ({}, '6', 'Invalid credentials provided'),
-                 ({}, '7', 'An issue occured whilst trying to connect to \
-Secure Trading servers'),
-                 ({}, '8', 'Unexpected error connecting to Secure Trading servers. \
-If the problem persists please contact support@securetrading.com'),
-                 ({}, '9', 'Unknown error. If this persists please contact \
-Secure Trading'),
-                 ({"locale": "fr_fr"}, '1', 'erreur g\xe9n\xe9rique'),
-                 ({"locale": "fr_fr"}, '9', "Erreur inconnue. Si cela persiste \
-s'il vous pla\xeet contacter Secure Trading"),
+        tests = [({}, '1', 'GATEWAYERRMSG', 'Generic error'),
+                 ({}, '2', 'GATEWAYERRMSG', "Secure Trading API requires the\
+ 'requests' library"),
+                 ({}, '4', 'GATEWAYERRMSG', 'Send error'),
+                 ({}, '5', 'GATEWAYERRMSG', 'Receive error'),
+                 ({}, '6', 'GATEWAYERRMSG', 'Invalid credentials provided'),
+                 ({}, '7', 'GATEWAYERRMSG', 'An issue occured whilst trying to\
+ connect to Secure Trading servers'),
+                 ({}, '8', 'GATEWAYERRMSG', 'Unexpected error connecting to\
+ Secure Trading servers. If the problem persists please contact\
+ support@securetrading.com'),
+                 ({}, '9', 'GATEWAYERRMSG', 'Unknown error. If this persists \
+please contact Secure Trading'),
+                 ({"locale": "fr_fr"}, '1', 'GATEWAYERRMSG',
+                  'erreur g\xe9n\xe9rique'),
+                 ({"locale": "fr_fr"}, '9', 'GATEWAYERRMSG',
+                  "Erreur inconnue. Si cela persiste s'il vous pla\xeet\
+ contacter Secure Trading"),
+                 ({}, '99', "GATEWAYERRMSG", 'GATEWAYERRMSG'),
+                 ({"locale": "fr_fr"}, '99', 'GATEWAYERRMSG', 'GATEWAYERRMSG'),
                  ]
 
-        for config_data, code, expected in tests:
+        for config_data, code, gateway_err_msg, expected in tests:
             config = securetrading.Config()
             for key in config_data:
                 setattr(config, key, config_data[key])
             phrasebook = securetrading.PhraseBook(config)
-            actual = util._get_errormessage(code, phrasebook)
+            actual = util._get_errormessage(code, gateway_err_msg, phrasebook)
             self.assertEqual(expected, actual)
 
 if __name__ == "__main__":
