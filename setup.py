@@ -25,7 +25,7 @@ setup(
     version=version,
     description="Python API to connect to Secure Trading",
     long_description=long_description,
-    url='https://github.com/Secure-Trading/PythonAPI',
+    url='https://github.com/Secure-Trading/st-python-api',
     author='Secure Trading',
     author_email='devapi@securetrading.com',
     license='MIT',

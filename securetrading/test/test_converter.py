@@ -26,7 +26,7 @@ class Test_Converter(abstract_test.TestCase):
         return converter
 
     def test__encode(self):
-        lib_version = "python_1.0.4"
+        lib_version = "python_1.0.5"
         requestblock = {"alias": "test@testing.com",
                         "version": "1.00",
                         "libraryversion": lib_version,

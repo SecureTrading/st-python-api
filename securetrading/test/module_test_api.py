@@ -42,7 +42,6 @@ class Module_Test_Api(abstract_test.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(Module_Test_Api, self).__init__(*args, **kwargs)
-        passed_args = self.PASSED_ARGS
         self.sitereference = passed_args.sitereference
         # Please contact Secure Trading support to set up a test site
         # The following options are required.
@@ -91,19 +90,19 @@ class Module_Test_Api(abstract_test.TestCase):
         st_config4.ssl_certificate_file = os.path.join(base_path,
                                                        "test/testcacert.pem")
 
-        # set locale for all st_api configs when specified
-        if hasattr(self, "api_locale"):
-            api_locale = self.api_locale
-            st_config.locale = api_locale
-            st_config2.locale = api_locale
-            st_config3.locale = api_locale
-            st_config4.locale = api_locale
+        # st_api valid credentials fr setup
+        st_config_fr = securetrading.Config()
+        st_config_fr.username = username
+        st_config_fr.password = password
+        st_config_fr.ssl_certificate_file = ssl_cert_file
+        st_config_fr.locale = "fr_fr"
 
         # initialise all the st_api objects with their respective config
         self.st_api = securetrading.Api(st_config)
         self.st_api2 = securetrading.Api(st_config2)
         self.st_api3 = securetrading.Api(st_config3)
         self.st_api4 = securetrading.Api(st_config4)
+        self.st_api_fr = securetrading.Api(st_config_fr)
 
         if self.PARENT_RESPONSES is None:
             # Singleton so that it doenst get set always
@@ -263,7 +262,7 @@ class Module_Test_Api(abstract_test.TestCase):
               (python_version == 2 and isinstance(expecteds, basestring))):
             self.assertEqual(actuals, expecteds)
 
-    def test_auth(self, error_msg="Ok"):
+    def test_auth(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -275,13 +274,33 @@ class Module_Test_Api(abstract_test.TestCase):
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "acquirerresponsecode": "00",
                          }
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_auth_from_token(self, error_msg="Ok"):
+    def test_auth_fr(self):
+        extra_updates = {"pan": "4111111111111111",
+                         "expirymonth": "11",
+                         "expiryyear": "2031",
+                         "securitycode": "123",
+                         "paymenttypedescription": "VISA",
+                         }
+
+        data = self.get_request_values("AUTH", extra_updates=extra_updates)
+
+        st_request = self._get_st_request(data)
+        st_response = self.st_api_fr.process(st_request)
+
+        exp_resp_data = {"errorcode": "0",
+                         "errormessage": "D'accord",
+                         "acquirerresponsecode": "00",
+                         }
+        exp_raw_resp = [exp_resp_data]
+        self.validate(st_response["responses"], exp_raw_resp)
+
+    def test_auth_from_token(self):
         token = self.PARENT_RESPONSES["cachetoken"]["cachetoken"]
         extra_updates = {"cachetoken": token,
                          }
@@ -291,14 +310,14 @@ class Module_Test_Api(abstract_test.TestCase):
         st_response = self.process_single(data)
 
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "acquirerresponsecode": "00",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_auth_moto(self, error_msg="Ok"):
+    def test_auth_moto(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -311,15 +330,14 @@ class Module_Test_Api(abstract_test.TestCase):
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "acquirerresponsecode": "00",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_invalid_encoding_latin1(self, error_msg="Incorrect usage of the\
- Secure Trading API"):
+    def test_invalid_encoding_latin1(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -333,7 +351,8 @@ class Module_Test_Api(abstract_test.TestCase):
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "10",
-                         "errormessage": error_msg,
+                         "errormessage": "Incorrect usage of the\
+ Secure Trading API",
                          "errordata":
                          ["All types should be specified in unicode"],
                          "requesttypedescription": "ERROR",
@@ -342,7 +361,7 @@ class Module_Test_Api(abstract_test.TestCase):
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_invalid_request_not_using_request_object(self, error_msg="Ok"):
+    def test_invalid_request_not_using_request_object(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -354,26 +373,25 @@ class Module_Test_Api(abstract_test.TestCase):
 
         st_response = self.st_api.process(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "acquirerresponsecode": "00",
                          }
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_invalid_request_using_invalid_request_object(self, error_msg="Inco\
-rrect usage of the Secure Trading API"):
+    def test_invalid_request_using_invalid_request_object(self):
         data = []
 
         st_response = self.st_api.process(data)
         exp_resp_data = {"errorcode": "10",
-                         "errormessage": error_msg,
+                         "errormessage": "Incorrect usage of the\
+ Secure Trading API",
                          "requesttypedescription": "ERROR",
                          }
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_invalid_request_using_own_object(self, error_msg="Incorrect usage\
- of the Secure Trading API"):
+    def test_invalid_request_using_own_object(self):
         class myObj(dict):
             def verify(self):
                 pass
@@ -382,28 +400,28 @@ rrect usage of the Secure Trading API"):
         data.update({"requestreference": "REFERENCE"})
         st_response = self.st_api.process(data)
         exp_resp_data = {"errorcode": "10",
-                         "errormessage": error_msg,
+                         "errormessage": "Incorrect usage of the\
+ Secure Trading API",
                          "requesttypedescription": "ERROR",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_invalid_request_no_data(self, error_msg="Invalid requesttype"):
+    def test_invalid_request_no_data(self):
         data = {}
 
         st_response = self.process_single(data)
 
         exp_resp_data = {"errorcode": "60018",
-                         "errormessage": error_msg,
+                         "errormessage": "Invalid requesttype",
                          "errordata": ["None"],
                          "requesttypedescription": "ERROR",
                          }
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_invalid_request_invalid_credentials(self, error_msg="Invalid\
- credentials provided"):
+    def test_invalid_request_invalid_credentials(self):
         extra_updates = {"pan": "4000000000000812",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -417,7 +435,7 @@ rrect usage of the Secure Trading API"):
         st_response = self.st_api2.process(st_request)
 
         exp_resp_data = {"errorcode": "6",
-                         "errormessage": error_msg,
+                         "errormessage": "Invalid credentials provided",
                          "errordata": [],
                          "requesttypedescription": "ERROR",
                          }
@@ -428,8 +446,7 @@ rrect usage of the Secure Trading API"):
 # This test generates an warning message to appear. It looks
 # like is an issue with the underlying requests library
 # https://github.com/kennethreitz/requests/issues/1882#ref-commit-5c20437
-    def test_invalid_request_corrupt_cacerts_file(self, error_msg="An issue\
- occured whilst trying to connect to Secure Trading servers"):
+    def test_invalid_request_corrupt_cacerts_file(self):
         extra_updates = {"pan": "4000000000000812",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -443,7 +460,8 @@ rrect usage of the Secure Trading API"):
         st_response = self.st_api3.process(st_request)
 
         exp_resp_data = {"errorcode": "7",
-                         "errormessage": error_msg,
+                         "errormessage": "An issue occured whilst trying to\
+ connect to Secure Trading servers",
                          "errordata": [],
                          "requesttypedescription": "ERROR",
                          }
@@ -451,8 +469,7 @@ rrect usage of the Secure Trading API"):
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_invalid_request_invalid_cacerts_file(self, error_msg="An issue\
- occured whilst trying to connect to Secure Trading servers"):
+    def test_invalid_request_invalid_cacerts_file(self):
         extra_updates = {"pan": "4000000000000812",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -466,7 +483,8 @@ rrect usage of the Secure Trading API"):
         st_response = self.st_api4.process(st_request)
 
         exp_resp_data = {"errorcode": "7",
-                         "errormessage": error_msg,
+                         "errormessage": "An issue occured whilst\
+ trying to connect to Secure Trading servers",
                          "errordata": [],
                          "requesttypedescription": "ERROR",
                          }
@@ -474,7 +492,7 @@ rrect usage of the Secure Trading API"):
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_auth_decline(self, error_msg="Decline"):
+    def test_auth_decline(self):
         extra_updates = {"pan": "4000000000000812",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -486,14 +504,14 @@ rrect usage of the Secure Trading API"):
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "70000",
-                         "errormessage": error_msg,
+                         "errormessage": "Decline",
                          "authcode": "DECLINED",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_auth_sofort(self, error_msg="Ok"):
+    def test_auth_sofort(self):
         extra_updates = {"bankid": "987654321",
                          "bankname": "FORTIS",
                          "currencyiso3a": "EUR",
@@ -511,14 +529,14 @@ rrect usage of the Secure Trading API"):
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "settlestatus": "10",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_auth_ach(self, error_msg="Ok"):
+    def test_auth_ach(self):
         extra_updates = {"achaba": "987654321",
                          "achaccountnumber": "123456781",
                          "achchecknumber": "123456",
@@ -538,7 +556,7 @@ rrect usage of the Secure Trading API"):
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "acquirerresponsecode": "A01",
                          "acquirerresponsemessage": "APPROVED",
                          }
@@ -546,7 +564,7 @@ rrect usage of the Secure Trading API"):
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_refund(self, error_msg="Ok"):
+    def test_refund(self):
         p_ref = self.PARENT_RESPONSES["settled_auth"]["transactionreference"]
         extra_updates = {"parenttransactionreference": p_ref,
                          }
@@ -555,13 +573,13 @@ rrect usage of the Secure Trading API"):
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_refund_cft(self, error_msg="Ok"):
+    def test_refund_cft(self):
         extra_updates = {"accounttypedescription": "CFT",
                          "pan": "4111111111111111",
                          "expirymonth": "11",
@@ -575,7 +593,7 @@ rrect usage of the Secure Trading API"):
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "authcode": "TEST REFUND ACCEPTED",
                          "acquirerresponsecode": "00",
                          }
@@ -583,7 +601,7 @@ rrect usage of the Secure Trading API"):
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_store(self, error_msg="Ok"):
+    def test_store(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -594,13 +612,13 @@ rrect usage of the Secure Trading API"):
         data = self.get_request_values("STORE", extra_updates=extra_updates)
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_cachetokenise(self, error_msg="Ok"):
+    def test_cachetokenise(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -613,24 +631,24 @@ rrect usage of the Secure Trading API"):
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_order(self, error_msg="Ok"):
+    def test_order(self):
         data = self.get_request_values("ORDER")
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_orderdetails(self, error_msg="Ok"):
+    def test_orderdetails(self):
         p_ref = self.PARENT_RESPONSES["order"]["transactionreference"]
         extra_updates = {"parenttransactionreference": p_ref,
                          }
@@ -640,14 +658,14 @@ rrect usage of the Secure Trading API"):
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "paypaladdressstatus": "Confirmed",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_accountcheck(self, error_msg="Ok"):
+    def test_accountcheck(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -660,13 +678,13 @@ rrect usage of the Secure Trading API"):
         st_response = self.process_single(data)
 
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_threedquery(self, error_msg="Ok"):
+    def test_threedquery(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -678,13 +696,13 @@ rrect usage of the Secure Trading API"):
                                        extra_updates=extra_updates)
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_multi_threedquery_auth_enrolled(self, error_msg="Ok"):
+    def test_multi_threedquery_auth_enrolled(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -697,14 +715,14 @@ rrect usage of the Secure Trading API"):
                                        extra_updates=extra_updates)
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          }
 
         exp_raw_resp = [exp_resp_data]
 
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_multi_threedquery_auth_notenrolled(self, error_msg="Ok"):
+    def test_multi_threedquery_auth_notenrolled(self):
         extra_updates = {"pan": "4000000000000721",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -718,19 +736,19 @@ rrect usage of the Secure Trading API"):
         st_response = self.process_single(data)
 
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "acquirerresponsecode": "00",
                          }
 
         exp_raw_resp = [{"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          },
                         exp_resp_data,
                         ]
 
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_currencyrate(self, error_msg="Ok"):
+    def test_currencyrate(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -743,13 +761,13 @@ rrect usage of the Secure Trading API"):
         st_response = self.process_single(data)
 
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_riskdec(self, error_msg="Ok"):
+    def test_riskdec(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -760,25 +778,25 @@ rrect usage of the Secure Trading API"):
         st_response = self.process_single(data)
 
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_identitycheck(self, error_msg="Ok"):
+    def test_identitycheck(self):
         data = self.get_request_values("IDSTANDARD")
 
         st_response = self.process_single(data)
 
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_transactionquery(self, error_msg="Ok"):
+    def test_transactionquery(self):
         p_ref = self.PARENT_RESPONSES["pending_auth"]["transactionreference"]
         data = {"requesttypedescriptions": ["TRANSACTIONQUERY"],
                 "filter": {"transactionreference": [{"value": p_ref}],
@@ -788,7 +806,7 @@ rrect usage of the Secure Trading API"):
         st_response = self.process_single(data)
 
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "records": [{"requesttypedescription": "AUTH",
                                       "transactionreference": p_ref,
                                       "interface": "PASS-JSON-JSON",
@@ -799,7 +817,7 @@ rrect usage of the Secure Trading API"):
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_transactionupdate(self, error_msg="Ok"):
+    def test_transactionupdate(self):
         p_ref = self.PARENT_RESPONSES["pending_auth"]["transactionreference"]
         data = {"requesttypedescriptions": ["TRANSACTIONUPDATE"],
                 "filter": {"transactionreference": [{"value": p_ref}],
@@ -810,13 +828,13 @@ rrect usage of the Secure Trading API"):
 
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          }
 
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_multi_accountcheck_subscription(self, error_msg="Ok"):
+    def test_multi_accountcheck_subscription(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -835,19 +853,19 @@ rrect usage of the Secure Trading API"):
         st_response = self.process_single(data)
 
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "requesttypedescription": "ACCOUNTCHECK"
                          }
 
         exp_raw_resp = [exp_resp_data,
                         {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "requesttypedescription": "SUBSCRIPTION"
                          }]
 
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_seperate_accountcheck_subscription(self, error_msg="Ok"):
+    def test_seperate_accountcheck_subscription(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
                          "expiryyear": "2031",
@@ -869,13 +887,13 @@ rrect usage of the Secure Trading API"):
         st_response = self.process_multiple([ac_data, sub_data])
 
         exp_resp_data = {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "requesttypedescription": "ACCOUNTCHECK"
                          }
 
         exp_raw_resp = [exp_resp_data,
                         {"errorcode": "0",
-                         "errormessage": error_msg,
+                         "errormessage": "Ok",
                          "requesttypedescription": "SUBSCRIPTION"
                          }]
 
@@ -885,5 +903,4 @@ rrect usage of the Secure Trading API"):
 if __name__ == "__main__":
     script_name = sys.argv[0]
     passed_args, unittest_args = get_args()
-    Module_Test_Api.PASSED_ARGS = passed_args
     unittest.main(argv=[script_name] + unittest_args)
