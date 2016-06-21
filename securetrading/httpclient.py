@@ -2,8 +2,6 @@ from __future__ import unicode_literals
 import securetrading
 import time
 import securetrading.util
-import warnings
-import sys
 import platform
 
 
@@ -32,12 +30,6 @@ def _get_client(request_reference, config):
         debug = "{0} Using the 'requests' library".format(request_reference)
         securetrading.util.logger.debug(debug)
         client = HTTPRequestsClient(config)
-    # Consider adding a fallback option like this:
-    # elif httplibClient:
-    #    warnings.warn("Falling back to using HttpsClient. \
-    #    HttpsClient libaray does not verify SSL certificates, \
-    #    we suggest you install 'requests'")
-    #    client = HttpClient
     else:
         msg = "No request library found"
         raise securetrading.SecureTradingError("2", data=[msg])

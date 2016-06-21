@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
-import sys
 import unittest
 from securetrading.test import abstract_test
 import glob
@@ -18,6 +17,7 @@ class Test_CodeFormat(abstract_test.TestCase):
         return glob.glob(os.path.join(directory, "*.py"))
 
     def test_pep8_conformance(self):
+        """Test that we conform to PEP8."""
         if pep8 is not None:
             ignore_error_codes = []
 
@@ -31,7 +31,6 @@ class Test_CodeFormat(abstract_test.TestCase):
                 path = os.path.join(base_path, directory)
                 if os.path.exists(path):
                     files = self.get_files(path)
-                    """Test that we conform to PEP8."""
 
                     results = []
                     # Need to check if pep8 is installed before running

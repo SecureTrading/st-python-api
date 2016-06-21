@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # Always prefer setuptools over distutils
-from setuptools import setup, find_packages
+from setuptools import setup
 from codecs import open
 from os import path
-import sys
 import re
 
 here = path.abspath(path.dirname(__file__))

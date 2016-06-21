@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 import unittest
 from securetrading.test import abstract_test
 import securetrading.exceptions

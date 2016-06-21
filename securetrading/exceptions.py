@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-import sys
 import securetrading.util
 # Exception class
 

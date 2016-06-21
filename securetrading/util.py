@@ -10,7 +10,7 @@ min_requests_version = (2, 9, 0)
 min_requests_version_str = ".".join([str(f) for f in min_requests_version])
 
 try:
-    import json
+    import json  # pylint: disable=unused-import
 except ImportError:
     # Could use simplejson here if we wanted to.
     raise ImportError("Secure Trading API requires a JSON library")

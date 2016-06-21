@@ -1,8 +1,5 @@
 from __future__ import unicode_literals
-import unittest
 from securetrading.test import abstract_test
-import sys
-import securetrading
 
 
 class Abstract_Test_StObjects(abstract_test.TestCase):

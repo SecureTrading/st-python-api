@@ -6,9 +6,8 @@ from securetrading.test import abstract_test
 import time
 import hashlib
 import os
-import platform
-import sys
 import argparse
+import sys
 
 
 def get_args():

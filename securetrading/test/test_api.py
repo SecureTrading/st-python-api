@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
-import sys
 import unittest
 from securetrading.test import abstract_test
 import securetrading

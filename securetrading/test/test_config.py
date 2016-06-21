@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 import unittest
 from securetrading.test import abstract_test
-import sys
 import securetrading
 
 

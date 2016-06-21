@@ -7,3 +7,4 @@ securetrading.egg-info
 *.egg
 .tox/
 requests/
+testlist.txt

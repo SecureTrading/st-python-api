@@ -12,7 +12,6 @@ from requests.exceptions import ConnectionError as RequestsConnectionError
 from requests.exceptions import RequestException
 import platform
 import time
-import sys
 
 
 class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
