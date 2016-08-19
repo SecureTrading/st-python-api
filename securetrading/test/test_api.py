@@ -38,7 +38,7 @@ class Test_Api(abstract_test.TestCase):
         connecterror = securetrading.ConnectionError
         sendrecverror = securetrading.SendReceiveError
 
-        versioninfo = "Python::{0}::1.0.5::{1}".format(
+        versioninfo = "Python::{0}::1.0.6::{1}".format(
             platform.python_version(),
             platform.platform())
         request1 = self.get_securetrading_request({})
@@ -50,6 +50,9 @@ class Test_Api(abstract_test.TestCase):
                                    })
 
         french_config = self.get_config({"locale": "fr_fr",
+                                         })
+
+        german_config = self.get_config({"locale": "de_de",
                                          })
 
         request2 = self.get_securetrading_request(
@@ -65,7 +68,7 @@ class Test_Api(abstract_test.TestCase):
         request2_str = '{{"requestreference": "{0}",\
 "version": "1.00", "response": [{{"errorcode" : "0"}}]}}'
 
-        lib_version = "python_1.0.5"
+        lib_version = "python_1.0.6"
         msg = "{0} Maximum time reached whilst trying to connect to {1}\
 ".format(request2["requestreference"], request2["datacenterurl"])
         connection_error = connecterror("7", data=[msg])
@@ -169,10 +172,25 @@ request specified'],
                                        'requesttypedescription': 'ERROR',
                                        'requestreference': '',
                                        'errormessage':
-                                           "Une utilisation incorrecte de \
+                                           "Utilisation incorrecte de \
 l'API Secure Trading"},
                                       ]}
                        ),  # French version of the config
+                      ([], german_config, None, None, None, None, None,
+                       None,
+                       {'requestreference': '',
+                        'responses': [{'errorcode': '10',
+                                       'errordata':
+                                           ['Incorrect type of \
+request specified'],
+                                       'requesttypedescription': 'ERROR',
+                                       'requestreference': '',
+                                       'errormessage':
+                                           'Fehlerhafte Verwendung der Secure \
+Trading API'},
+                                      ]}
+                       ),  # German version of the config
+
                       (request2, default_config, None, connecterror("7"), None,
                        None, None, None,
                        {"requestreference": request2["requestreference"],

@@ -59,12 +59,18 @@ class Test_util(abstract_test.TestCase):
                  ({}, '9', 'GATEWAYERRMSG', 'Unknown error. If this persists \
 please contact Secure Trading'),
                  ({"locale": "fr_fr"}, '1', 'GATEWAYERRMSG',
-                  'erreur g\xe9n\xe9rique'),
+                  'Erreur g\xe9n\xe9rique'),
                  ({"locale": "fr_fr"}, '9', 'GATEWAYERRMSG',
-                  "Erreur inconnue. Si cela persiste s'il vous pla\xeet\
- contacter Secure Trading"),
+                  "Erreur inconnue. Si cela persiste veuillez contacter \
+Secure Trading"),
+                 ({"locale": "de_de"}, '1', 'GATEWAYERRMSG',
+                  'Allgemeiner Fehler'),
+                 ({"locale": "de_de"}, '9', 'GATEWAYERRMSG',
+                  "Unbekannter Fehler. Wenn dieser weiterhin besteht, \
+kontaktieren Sie bitte Secure Trading"),
                  ({}, '99', "GATEWAYERRMSG", 'GATEWAYERRMSG'),
                  ({"locale": "fr_fr"}, '99', 'GATEWAYERRMSG', 'GATEWAYERRMSG'),
+                 ({"locale": "de_de"}, '99', 'GATEWAYERRMSG', 'GATEWAYERRMSG'),
                  ]
 
         for config_data, code, gateway_err_msg, expected in tests:

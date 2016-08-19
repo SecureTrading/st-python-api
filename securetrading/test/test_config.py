@@ -239,6 +239,7 @@ class Test_Config(abstract_test.TestCase):
         config = securetrading.Config()
         self.assertEqual("en_gb", config.locale)
         tests = [("fr_fr", None, ""),
+                 ("de_de", None, ""),
                  ("TESTING", Exception, "Please specifiy a valid locale according\
  to, the locale module"),
                  ]

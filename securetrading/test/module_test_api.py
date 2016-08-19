@@ -96,12 +96,20 @@ class Module_Test_Api(abstract_test.TestCase):
         st_config_fr.ssl_certificate_file = ssl_cert_file
         st_config_fr.locale = "fr_fr"
 
+        # st_api valid credentials de setup
+        st_config_de = securetrading.Config()
+        st_config_de.username = username
+        st_config_de.password = password
+        st_config_de.ssl_certificate_file = ssl_cert_file
+        st_config_de.locale = "de_de"
+
         # initialise all the st_api objects with their respective config
         self.st_api = securetrading.Api(st_config)
         self.st_api2 = securetrading.Api(st_config2)
         self.st_api3 = securetrading.Api(st_config3)
         self.st_api4 = securetrading.Api(st_config4)
         self.st_api_fr = securetrading.Api(st_config_fr)
+        self.st_api_de = securetrading.Api(st_config_de)
 
         if self.PARENT_RESPONSES is None:
             # Singleton so that it doenst get set always
@@ -279,8 +287,28 @@ class Module_Test_Api(abstract_test.TestCase):
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
-    def test_auth_fr(self):
-        extra_updates = {"pan": "4111111111111111",
+    def test_auth_decline_fr(self):
+        extra_updates = {"pan": "4242424242424242",
+                         "expirymonth": "11",
+                         "expiryyear": "2031",
+                         "securitycode": "123",
+                         "paymenttypedescription": "VISA",
+                         }
+        data = self.get_request_values("AUTH", extra_updates=extra_updates)
+
+        st_request = self._get_st_request(data)
+        st_response = self.st_api_fr.process(st_request)
+
+        exp_resp_data = {"errorcode": "70000",
+                         "errormessage": "Refuser",
+                         "authcode": "DECLINED",
+                         }
+
+        exp_raw_resp = [exp_resp_data]
+        self.validate(st_response["responses"], exp_raw_resp)
+
+    def test_auth_decline_de(self):
+        extra_updates = {"pan": "4242424242424242",
                          "expirymonth": "11",
                          "expiryyear": "2031",
                          "securitycode": "123",
@@ -290,12 +318,13 @@ class Module_Test_Api(abstract_test.TestCase):
         data = self.get_request_values("AUTH", extra_updates=extra_updates)
 
         st_request = self._get_st_request(data)
-        st_response = self.st_api_fr.process(st_request)
+        st_response = self.st_api_de.process(st_request)
 
-        exp_resp_data = {"errorcode": "0",
-                         "errormessage": "D'accord",
-                         "acquirerresponsecode": "00",
+        exp_resp_data = {"errorcode": "70000",
+                         "errormessage": "ablehnen",
+                         "authcode": "DECLINED",
                          }
+
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
