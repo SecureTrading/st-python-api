@@ -180,9 +180,9 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
     def test__get_connection_time_out(self):
         tests = [(time.time(), 10, 5, False, "5"),
                  # The regular expressions due to changes in box times
-                 (time.time(), 4, 5, False, "3.\d+"),
-                 (time.time()-2, 4, 5, False, "1.\d+"),
-                 (time.time()-2, 4, 3, False, "1.\d+"),
+                 (time.time(), 4, 5, False, "[34].\d+"),
+                 (time.time()-2, 4, 5, False, "[12].\d+"),
+                 (time.time()-2, 4, 3, False, "[12].\d+"),
                  ]
 
         config = securetrading.Config()
