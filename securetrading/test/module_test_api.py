@@ -927,6 +927,102 @@ class Module_Test_Api(abstract_test.TestCase):
 
         self.validate(st_response["responses"], exp_raw_resp)
 
+    def test_separate_transactionupdate_refund_update(self):
+        p_ref = self.PARENT_RESPONSES["pending_auth"]["transactionreference"]
+        rf_extra = {"parenttransactionreference": p_ref,
+                    "baseamount": "15",
+                    }
+
+        rf_data = self.get_request_values("REFUND",
+                                          extra_updates=rf_extra)
+
+        rf_data["requesttypedescription"] = rf_data.pop(
+            "requesttypedescriptions")[0]
+
+        trxup_extra = {"requesttypedescriptions": ["TRANSACTIONUPDATE"],
+                       "filter": {"transactionreference": [{"value": p_ref}],
+                                  },
+                       "updates": {"settlebaseamount": "35",
+                                   },
+                       }
+
+        trxup_data = self.get_request_values("REFUND",
+                                             extra_updates=trxup_extra)
+        trxup_data["requesttypedescription"] = trxup_data.pop(
+            "requesttypedescriptions")[0]
+
+        st_response = self.process_multiple([trxup_data, rf_data])
+
+        exp_raw_resp = [{"errorcode": "0",
+                         "errormessage": "Ok",
+                         "requesttypedescription": "TRANSACTIONUPDATE"
+                         }]
+
+        self.validate(st_response["responses"], exp_raw_resp)
+
+    def test_separate_transactionupdate_refund_refund(self):
+        p_ref = self.PARENT_RESPONSES["settled_auth"]["transactionreference"]
+        rf_extra = {"parenttransactionreference": p_ref,
+                    "baseamount": "20",
+                    }
+
+        rf_data = self.get_request_values("REFUND",
+                                          extra_updates=rf_extra)
+
+        rf_data["requesttypedescription"] = rf_data.pop(
+            "requesttypedescriptions")[0]
+
+        trxup_extra = {"requesttypedescriptions": ["TRANSACTIONUPDATE"],
+                       "filter": {"transactionreference": [{"value": p_ref}],
+                                  },
+                       "updates": {"settlebaseamount": "80",
+                                   },
+                       }
+
+        trxup_data = self.get_request_values("REFUND",
+                                             extra_updates=trxup_extra)
+        trxup_data["requesttypedescription"] = trxup_data.pop(
+            "requesttypedescriptions")[0]
+
+        st_response = self.process_multiple([trxup_data, rf_data])
+
+        exp_raw_resp = [{"errorcode": "60017",
+                         "errormessage": "Transaction not updatable",
+                         "requesttypedescription": "TRANSACTIONUPDATE",
+                         },
+                        {"errorcode": "0",
+                         "errormessage": "Ok",
+                         "requesttypedescription": "REFUND"
+                         }]
+
+        self.validate(st_response["responses"], exp_raw_resp)
+
+    def test_multi_transactionupdate_update_refund(self):
+
+        extra_updates = {"pan": "4111111111111111",
+                         "expirymonth": "11",
+                         "expiryyear": "2031",
+                         "securitycode": "123",
+                         "paymenttypedescription": "VISA",
+                         "baseamount": "100",
+                         "requesttypedescriptions": ["TRANSACTIONUPDATE",
+                                                     "REFUND"]
+                         }
+
+        data = self.get_request_values("TRANSACTIONUPDATE",
+                                       extra_updates=extra_updates)
+        data = self.get_request_values("REFUND",
+                                       extra_updates=data)
+
+        st_response = self.process_single(data)
+
+        exp_raw_resp = [{"errorcode": "30000",
+                         "errormessage": "Invalid field",
+                         "errordata": ["requesttypedescriptions"],
+                         }]
+
+        self.validate(st_response["responses"], exp_raw_resp)
+
 
 if __name__ == "__main__":
     script_name = sys.argv[0]
