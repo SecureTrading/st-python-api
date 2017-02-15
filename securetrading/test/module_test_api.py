@@ -138,6 +138,10 @@ class Module_Test_Api(abstract_test.TestCase):
                              "AUTH",
                              {"settlestatus": "100",
                               "paymenttypedescription": "PAYPAL"}),
+                            ("settled_auth_refund",
+                             "AUTH",
+                             {"settlestatus": "100",
+                              "paymenttypedescription": "PAYPAL"}),
                             ("cachetoken",
                              "CACHETOKENISE",
                              {"pan": "4111111111111111",
@@ -149,7 +153,7 @@ class Module_Test_Api(abstract_test.TestCase):
                             ]
 
         for parent_key, requesttypdescription, updates in parents_required:
-            if parent_key == "settled_auth":
+            if parent_key.startswith("settled_auth"):
                 p_ref = parent_responses["order"]["transactionreference"]
                 updates["parenttransactionreference"] = p_ref
                 paypaltoken = parent_responses["order"]["paypaltoken"]
@@ -825,7 +829,8 @@ class Module_Test_Api(abstract_test.TestCase):
         self.validate(st_response["responses"], exp_raw_resp)
 
     def test_transactionquery(self):
-        p_ref = self.PARENT_RESPONSES["pending_auth"]["transactionreference"]
+        p_ref = (self.PARENT_RESPONSES["pending_auth"]
+                 ["transactionreference"])
         data = {"requesttypedescriptions": ["TRANSACTIONQUERY"],
                 "filter": {"transactionreference": [{"value": p_ref}],
                            }
@@ -961,7 +966,8 @@ class Module_Test_Api(abstract_test.TestCase):
         self.validate(st_response["responses"], exp_raw_resp)
 
     def test_separate_transactionupdate_refund_refund(self):
-        p_ref = self.PARENT_RESPONSES["settled_auth"]["transactionreference"]
+        p_ref = (self.PARENT_RESPONSES["settled_auth_refund"]
+                 ["transactionreference"])
         rf_extra = {"parenttransactionreference": p_ref,
                     "baseamount": "20",
                     }
