@@ -223,7 +223,9 @@ maximum allowed {3}".format(request_reference,
                 self._handle_exception(e)
 
     def _handle_exception(self, e):
-        if isinstance(e, requests.exceptions.RequestException):
+        # We may get an IOError if requests does not believe the
+        # certificate file is valid
+        if isinstance(e, (requests.exceptions.RequestException, IOError)):
             raise securetrading.ConnectionError("7", data=e)
         else:
             raise securetrading.ConnectionError("8", data=e)
