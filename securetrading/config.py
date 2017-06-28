@@ -15,6 +15,7 @@ API will use."""
                  "_password", "_datacenterurl",
                  "_http_max_allowed_connection_time",
                  "_http_connect_timeout",
+                 "_http_response_headers",
                  "_http_proxy", "_ssl_certificate_file",
                  "_libraryversion",
                  "_locale",
@@ -38,6 +39,7 @@ default values that can then be overridden.
         self._http_max_retries = 6
         self._http_retry_sleep = 0.5
         self._http_max_allowed_connection_time = 10
+        self._http_response_headers = []
         self._username = ""
         self._password = ""
         self._datacenterurl = "https://webservices.securetrading.net"
@@ -346,6 +348,44 @@ will use to sleep between connection attempts to Secure Trading.
         msg = "An int or float is required for the sleep period"
         assert isinstance(value, (float, int)), msg
         self._http_retry_sleep = value
+
+    @property
+    def http_response_headers(self):
+        """A list of which HTTP response headers should be returned by the API.
+
+        This property holds which HTTP response headers should be returned
+from Secure Trading on the Response object. If no headers are requested the
+Response object will not contain the headers key
+
+        Args:
+           value: (optional [list]) A list of response headers which want to be
+made available on the Response object.
+
+        Returns:
+           The HTTP response headers in a dict set on the key 'headers' on the
+Response object.
+
+        Usage:
+           >>> config.http_response_headers = ["Content-type"]
+           >>> api = securetrading.Api(config)
+           >>> response = api.process(request)
+           >>> headers = response["headers"]
+        """
+        return self._http_response_headers
+
+    @http_response_headers.setter
+    def http_response_headers(self, values):
+        msg = "A list of strings are required to flag whether the header is \
+returned"
+        assert isinstance(values, list), msg
+        lowered_values = []
+        str_typ = str
+        if util._is_python_2():
+            str_typ = basestring
+        for value in values:
+            assert isinstance(value, str_typ), msg
+            lowered_values.append(value.lower())
+        self._http_response_headers = lowered_values
 
     @property
     def username(self):

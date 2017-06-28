@@ -50,7 +50,7 @@ class Converter(object):
         securetrading.util.logger.debug(debug)
         return result
 
-    def _decode(self, response, request_reference):
+    def _decode(self, response, response_headers, request_reference):
         try:
             result = securetrading.util.json.loads(response)
         except Exception as e:
@@ -61,6 +61,8 @@ class Converter(object):
         for k in ["requestreference", "version"]:
             response_object.update({k: result[k]})
         response_object["responses"] = result["response"]
+        if self.config.http_response_headers and response_headers:
+            response_object["headers"] = response_headers
         response_data = None
         debug = "{0} Finished decoding".format(request_reference)
         securetrading.util.logger.debug(debug)

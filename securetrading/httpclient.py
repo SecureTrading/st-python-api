@@ -57,6 +57,9 @@ class GenericHTTPClient(object):
     def _connect(self, url):
         raise NotImplementedError
 
+    def _get_response_headers(self):
+        raise NotImplementedError
+
     def _get_headers(self, request_reference):
         version_info = securetrading.version_info
         python_version = platform.python_version()
@@ -72,7 +75,7 @@ class GenericHTTPClient(object):
                    }
         return headers
 
-    def _verify_response(self, status_code, response):
+    def _verify_response(self, status_code, response, response_headers):
         pass
 
     def _handle_invalid_response(self, code, content):
@@ -107,6 +110,7 @@ class GenericHTTPClient(object):
             try:
                 self._send(url, request_data, request_reference)
                 (status_code, response) = self._receive()
+                response_headers = self._get_response_headers()
             except (securetrading.SecureTradingError) as e:
                 securetrading.util.logger.debug(e, exc_info=True)
                 raise
@@ -120,7 +124,7 @@ class GenericHTTPClient(object):
                                                           recv_time_taken)
                 securetrading.util.logger.info(info)
             try:
-                self._verify_response(status_code, response)
+                self._verify_response(status_code, response, response_headers)
             finally:
                 recv_time_taken = time.time() - recv_start
                 info = "{0} Finished transport: {1:.2f}".format(
@@ -128,7 +132,7 @@ class GenericHTTPClient(object):
                 securetrading.util.logger.info(info)
         finally:
             self._close()
-        return response
+        return response, response_headers
 
 
 class HTTPRequestsClient(GenericHTTPClient):
@@ -236,3 +240,10 @@ maximum allowed {3}".format(request_reference,
         if status_code != requests.codes.ok:
             self._handle_invalid_response(status_code, text)
         return status_code, text
+
+    def _get_response_headers(self):
+        result = {}
+        for header in self.response.headers:
+            if header.lower() in self.config.http_response_headers:
+                result[header] = self.response.headers[header]
+        return result

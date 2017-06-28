@@ -14,6 +14,8 @@ class Test_Converter(abstract_test.TestCase):
             config_data = {"username": "test@testing.com",
                            "password": "testingpassword",
                            "jsonversion": "1.00",
+                           "http_response_headers": ["content-type", "header",
+                                                     "bad_requesttype"],
                            }
 
         config = securetrading.Config()
@@ -21,11 +23,12 @@ class Test_Converter(abstract_test.TestCase):
         config.username = config_data["username"]
         config.password = config_data["password"]
         config.jsonversion = config_data["jsonversion"]
+        config.http_response_headers = config_data["http_response_headers"]
         converter = securetrading.Converter(config)
         return converter
 
     def test__encode(self):
-        lib_version = "python_1.0.11"
+        lib_version = "python_1.0.12"
         requestblock = {"alias": "test@testing.com",
                         "version": "1.00",
                         "libraryversion": lib_version,
@@ -46,6 +49,7 @@ class Test_Converter(abstract_test.TestCase):
         different_config_data = {"username": "diff@different.com",
                                  "password": "differentpassword",
                                  "jsonversion": "2.20",
+                                 "http_response_headers": [],
                                  }
 
         currencyrate_data = {"requesttypedescription": "CURRENCYRATE",
@@ -203,6 +207,7 @@ encoding failed"
                                    "securityresponseaddress": "0",
                                    "issuercountryiso2a": "ZZ",
                                    "settlestatus": "0"}],
+                    "headers": {"header": "value"},
                     }
 
         exp_response_auth = self.get_securetrading_response(auth_exp)
@@ -354,6 +359,7 @@ transactions",
                                        "settlestatus": "0"
                                        }
                                       ],
+                                 "headers": {"header": "value2"},
                                  }
 
         exp_response_accountcheck_auth =\
@@ -383,6 +389,7 @@ transactions",
                                      "errordata": ["BADREQUEST"],
                                      }
                                     ],
+                               "headers": {"bad_requesttype": "headers"},
                                }
 
         exp_response_bad_requesttype =\
@@ -395,31 +402,33 @@ transactions",
         if python_version >= 3:
             json_bad_english = "5 Expecting value: line 1 column 1 (char 0)"
 
-        tests = [(auth_json, exp_response_auth, None, None, None, None),
-                 (accountcheck_auth_json,
+        tests = [(auth_json, {"header": "value"}, exp_response_auth, None,
+                  None, None, None),
+                 (accountcheck_auth_json, {"header": "value2"},
                   exp_response_accountcheck_auth, None, None, None, None),
-                 ("BADJSONSTRING", None, securetrading.SendReceiveError,
+                 ("BADJSONSTRING", {"bad_str": "headers"}, None,
+                  securetrading.SendReceiveError,
                   json_bad_english,
                   json_bad_data,
                   "5"),
-                 (bad_requesttype_json, exp_response_bad_requesttype, None,
-                  None, None, None),
+                 (bad_requesttype_json, {"bad_requesttype": "headers"},
+                  exp_response_bad_requesttype, None, None, None, None),
                  ]
 
-        for (json_str, expected, exp_exception, exp_english, exp_data,
-             exp_code) in tests:
+        for (json_str, headers_dict, expected, exp_exception, exp_english,
+             exp_data, exp_code) in tests:
             request_reference = "PASSEDINFORLOGGINGONLY"
             securetrading_converter = self.get_converter()
 
             if exp_exception is None:
                 actual = securetrading_converter._decode(
-                    json_str, request_reference)
+                    json_str, headers_dict, request_reference)
                 self.assertEqual(actual, expected)
             else:
                 self.check_st_exception(exp_exception, exp_data, exp_english,
                                         exp_code, securetrading_converter.
                                         _decode,
-                                        func_args=(json_str,
+                                        func_args=(json_str, headers_dict,
                                                    request_reference))
 
 if __name__ == "__main__":

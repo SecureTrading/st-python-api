@@ -79,6 +79,10 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
     def test__receive(self):
         self.assertRaises(NotImplementedError, self.http_client._receive)
 
+    def test__get_response_headers(self):
+        self.assertRaises(NotImplementedError,
+                          self.http_client._get_response_headers)
+
     def test__send(self):
         args = ("https://www.securetrading.com",
                 {"request": "data"},
@@ -202,52 +206,57 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
 
         c2_exp_eng = "7 Connect Error"
 
-        tests = [(None, None, (200, "Success"), None, None, None,
-                  None, None, None, None, "Success"),
-                 (Exception("Connect Error"), None, None, None, None,
+        tests = [(None, None, (200, "Success"), {"example": "headers"}, None,
+                  None, None, None, None, None, None, "Success",
+                  {"example": "headers"}),
+                 (Exception("Connect Error"), None, None, None, None, None,
                   None, ConnectionError, ["Connect Error"], c2_exp_eng,
-                  "7", None,),
-                 (None, Exception("Send Error"), None, None, None, None,
+                  "7", None, {}),
+                 (None, Exception("Send Error"), None, None, None, None, None,
                   SendReceiveError, ["Send Error"], "4 Send Error", "4",
-                  None),
-                 (None, None, None, Exception("Receive Error"), None,
+                  None, {}),
+                 (None, None, None, None, Exception("Receive Error"), None,
                   None, SendReceiveError,
-                  ["Receive Error"], "4 Receive Error", "4", None,
+                  ["Receive Error"], "4 Receive Error", "4", None, {}
                   ),
-                 (None, None, (200, "Verification Error"), None,
-                  Exception("Verify Error"), None, Exception, None,
-                  "Verify Error", None, None,
+                 (None, None, (200, "Verification Error"),
+                  {"error": "headers"}, None, Exception("Verify Error"),
+                  None, Exception, None, "Verify Error", None, None, {}
                   ),
-                 (None, None, (200, "Closing Error"), None, None,
-                  Exception("Close Error"), Exception, None,
-                  "Close Error", None, None,
+                 (None, None, (200, "Closing Error"), {"error": "headers"},
+                  None, None, Exception("Close Error"), Exception, None,
+                  "Close Error", None, None, {}
                   ),
-                 (Exception("Connect Error"), None, None, None, None,
+                 (Exception("Connect Error"), None, None, None, None, None,
                   Exception("Close"), ConnectionError, ["Connect Error"],
-                  "7 Connect Error", "7", None,
+                  "7 Connect Error", "7", None, {}
                   # Connect Error takes precedence
                   ),
-                 (None, Exception("Send Error"), None, None, None,
+                 (None, Exception("Send Error"), None, None, None, None,
                   Exception("Close"), Exception, None, "Close", None,
-                  None),  # The close Exception takes precedence
-                 (None, None, None, Exception("Receive Error"), None,
+                  None, {}),  # The close Exception takes precedence
+                 (None, None, None, None, Exception("Receive Error"), None,
                   Exception("Close"), Exception, None, "Close", None,
-                  None),  # The close Exception takes precedence
-                 (None, None, None, None, Exception("Verify Error"),
+                  None, {}),  # The close Exception takes precedence
+                 (None, None, None, None, None, Exception("Verify Error"),
                   Exception("Close"), Exception, None, "Close", None,
-                  None),  # The close Exception takes precedence
+                  None, {}),  # The close Exception takes precedence
                  ]
 
         config = securetrading.Config()
 
-        for connect_raises, send_raises, receive_response, receive_raises,\
-                verify_raises, close_raises, exp_exception, exp_data,\
-                exp_english, exp_code, exp_response in tests:
+        for connect_raises, send_raises, receive_response, header_response,\
+                receive_raises, verify_raises, close_raises, exp_exception,\
+                exp_data, exp_english, exp_code, exp_response, exp_headers\
+                in tests:
             mock_client = self.client(config)
             mock_client._connect = self.mock_method(exception=connect_raises)
             mock_client._send = self.mock_method(exception=send_raises)
             mock_client._receive = self.mock_method(result=receive_response,
                                                     exception=receive_raises)
+            mock_client._get_response_headers =\
+                self.mock_method(result=header_response)
+
             mock_client._verify_response =\
                 self.mock_method(exception=verify_raises)
             mock_client._close = self.mock_method(exception=close_raises)
@@ -263,8 +272,9 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                                         exp_code, mock_client._main,
                                         func_args=main_args)
             else:
-                actual = mock_client._main(*main_args)
-                self.assertEqual(actual, exp_response)
+                actual_response, actual_headers = mock_client._main(*main_args)
+                self.assertEqual(actual_response, exp_response)
+                self.assertEqual(actual_headers, exp_headers)
 
 
 class Test_httpclient_HTTPRequestsClient(Test_httpclient_GenericHTTPClient):
@@ -410,8 +420,8 @@ whilst trying to connect to https://www.securetrading.com"]
 
     def test__receive(self):
         tests = [(b"Text", 200, None, None, None, None, (200, "Text")),
-                 (b"Different Text", 200, None, None, None, None,
-                  (200, "Different Text")
+                 (b"Different Text", 200, None, None,
+                  None, None, (200, "Different Text")
                   ),
                  (self.byt_uni, 200, None, None, None, None,
                   (200, self.uni)),
@@ -440,6 +450,39 @@ whilst trying to connect to https://www.securetrading.com"]
             else:
                 actual = self.http_client._receive()
                 self.assertEqual(actual, exp_response)
+
+    def test__get_response_headers(self):
+        tests = [({}, [], {}),
+                 ({}, ["content-type"], {}),
+                 ({"Content-type": "application/json"},
+                  ["content-type"], {"Content-type": "application/json"}),
+                 ({"ConTent-TypE": "application/json"},
+                  ["content-type"], {"ConTent-TypE": "application/json"}),
+                 ({"Content-type": "application/json",
+                   "Content-length": "1234"},
+                  ["content-type"], {"Content-type": "application/json"}),
+                 ({"Content-type": "application/json",
+                   "Content-length": "1234"},
+                  ["content-type", "content-length"],
+                  {"Content-type": "application/json",
+                   "Content-length": "1234"}),
+                 ({}, ["content-type", "another"], {}),
+                 ({"Content-type": "application/json"},
+                  ["content-type", "another"],
+                  {"Content-type": "application/json"}),
+                 ]
+
+        for headers, requested_headers, exp_headers in tests:
+            response = requests.Response()
+            response.headers = headers
+            self.http_client.response = response
+
+            config = securetrading.Config()
+            config.http_response_headers = requested_headers
+            self.http_client.config = config
+
+            actual = self.http_client._get_response_headers()
+            self.assertEqual(actual, exp_headers)
 
 if __name__ == "__main__":
     unittest.main()

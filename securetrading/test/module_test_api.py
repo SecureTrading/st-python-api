@@ -103,6 +103,13 @@ class Module_Test_Api(abstract_test.TestCase):
         st_config_de.ssl_certificate_file = ssl_cert_file
         st_config_de.locale = "de_de"
 
+        # st_api valid credentials with Content-type response header
+        st_config_content_type = securetrading.Config()
+        st_config_content_type.username = username
+        st_config_content_type.password = password
+        st_config_content_type.ssl_certificate_file = ssl_cert_file
+        st_config_content_type.http_response_headers = ["content-type"]
+
         # initialise all the st_api objects with their respective config
         self.st_api = securetrading.Api(st_config)
         self.st_api2 = securetrading.Api(st_config2)
@@ -110,6 +117,7 @@ class Module_Test_Api(abstract_test.TestCase):
         self.st_api4 = securetrading.Api(st_config4)
         self.st_api_fr = securetrading.Api(st_config_fr)
         self.st_api_de = securetrading.Api(st_config_de)
+        self.st_api_content_type = securetrading.Api(st_config_content_type)
 
         if self.PARENT_RESPONSES is None:
             # Singleton so that it doenst get set always
@@ -290,6 +298,28 @@ class Module_Test_Api(abstract_test.TestCase):
                          }
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
+
+    def test_auth_content_type(self):
+        extra_updates = {"pan": "4111111111111111",
+                         "expirymonth": "11",
+                         "expiryyear": "2031",
+                         "securitycode": "123",
+                         "paymenttypedescription": "VISA",
+                         }
+
+        data = self.get_request_values("AUTH", extra_updates=extra_updates)
+
+        st_request = self._get_st_request(data)
+        st_response = self.st_api_content_type.process(st_request)
+
+        exp_resp_data = {"errorcode": "0",
+                         "errormessage": "Ok",
+                         "acquirerresponsecode": "00",
+                         }
+        exp_raw_resp = [exp_resp_data]
+        exp_raw_headers = {"Content-Type": "application/json"}
+        self.validate(st_response["responses"], exp_raw_resp)
+        self.validate(st_response["headers"], exp_raw_headers)
 
     def test_auth_decline_fr(self):
         extra_updates = {"pan": "4242424242424242",

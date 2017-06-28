@@ -148,6 +148,33 @@ class Test_Config(abstract_test.TestCase):
                                         "http_retry_sleep",
                                         sleep_value)
 
+    def test_http_response_headers(self):
+        config = securetrading.Config()
+        self.assertEqual([], config.http_response_headers)
+        exp_message = "A list of strings are required to flag whether the \
+header is returned"
+        tests = [("True", None, AssertionError),
+                 ([True], None, AssertionError),
+                 ({"max": False}, None, AssertionError),
+                 (["True"], ["true"], None),
+                 (["a"], ["a"], None),
+                 (["b", "Content-type"], ["b", "content-type"], None),
+                 (["b", u"\xa3", "Content-type"],
+                  ["b", u"\xa3", "content-type"], None),
+                 ]
+
+        for sleep_value, exp_value, exp_exception in tests:
+            if exp_exception is None:
+                config.http_response_headers = sleep_value
+                self.assertEqual(exp_value, config.http_response_headers)
+            else:
+                self.assertRaisesRegexp(exp_exception,
+                                        exp_message,
+                                        setattr,
+                                        config,
+                                        "http_response_headers",
+                                        sleep_value)
+
     def test_datacenterurl(self):
         config = securetrading.Config()
         self.assertEqual("https://webservices.securetrading.net",

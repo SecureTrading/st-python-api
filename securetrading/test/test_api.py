@@ -38,7 +38,7 @@ class Test_Api(abstract_test.TestCase):
         connecterror = securetrading.ConnectionError
         sendrecverror = securetrading.SendReceiveError
 
-        versioninfo = "Python::{0}::1.0.11::{1}".format(
+        versioninfo = "Python::{0}::1.0.12::{1}".format(
             platform.python_version(),
             platform.platform())
         request1 = self.get_securetrading_request({})
@@ -47,6 +47,7 @@ class Test_Api(abstract_test.TestCase):
         config1 = self.get_config({"username": "test",
                                    "jsonversion": "2.00",
                                    "datacenterurl": "https://test.com",
+                                   "http_response_headers": ["headers"],
                                    })
 
         french_config = self.get_config({"locale": "fr_fr",
@@ -68,7 +69,7 @@ class Test_Api(abstract_test.TestCase):
         request2_str = '{{"requestreference": "{0}",\
 "version": "1.00", "response": [{{"errorcode" : "0"}}]}}'
 
-        lib_version = "python_1.0.11"
+        lib_version = "python_1.0.12"
         msg = "{0} Maximum time reached whilst trying to connect to {1}\
 ".format(request2["requestreference"], request2["datacenterurl"])
         connection_error = connecterror("7", data=[msg])
@@ -90,7 +91,7 @@ class Test_Api(abstract_test.TestCase):
             jsonMessage = ["Expecting value: line 1 column 21 (char 20)"]
         test_cases = [(request1, default_config,
                        request1_str.format(request1["requestreference"]),
-                       None,
+                       {"Headers": "data"}, None,
                        "https://webservices.securetrading.net/json/",
                        {"alias": "",
                         "libraryversion": lib_version,
@@ -101,11 +102,12 @@ class Test_Api(abstract_test.TestCase):
                         "version": "1.00",
                         "responses": [{"errormessage": "Ok",
                                        "errorcode": "0"
-                                       }]}),
+                                       }]},
+                       None),
                       # config with new values instead of defaults
                       (request1, config1,
                        request1_str.format(request1["requestreference"]),
-                       None, "https://test.com/json/",
+                       {"Headers": "data"}, None, "https://test.com/json/",
                        {"alias": "test",
                         "libraryversion": lib_version,
                         "request": [request1_dict],
@@ -115,11 +117,12 @@ class Test_Api(abstract_test.TestCase):
                         "version": "1.00",
                         "responses": [{"errormessage": "Ok",
                                        "errorcode": "0"},
-                                      ]}),
+                                      ]},
+                       {"Headers": "data"}),
                       # config with new values instead of defaults
                       (request1, config1,
                        request1_str2.format(request1["requestreference"]),
-                       None, "https://test.com/json/",
+                       {"Accept": "*/*"}, None, "https://test.com/json/",
                        {"alias": "test",
                         "libraryversion": lib_version,
                         "request": [request1_dict],
@@ -127,11 +130,13 @@ class Test_Api(abstract_test.TestCase):
                        None, None,
                        {"requestreference": request1["requestreference"],
                         'version': '1.00',
-                        "responses": []}),
+                        "responses": []},
+                       {"Accept": "*/*"}),
                       # Invalid response example
                       (request2, config1,
                        request2_str.format(request2["requestreference"]),
-                       None, "https://somewhere.com/json/",
+                       {"Headers": "data"}, None,
+                       "https://somewhere.com/json/",
                        {"alias": "test",
                         "libraryversion": lib_version,
                         "request": [{"requestreference":
@@ -144,11 +149,12 @@ class Test_Api(abstract_test.TestCase):
                        {'requestreference': request2["requestreference"],
                         'version': '1.00',
                         'responses': [{"errormessage": "Ok",
-                                       "errorcode": "0"}]}),
+                                       "errorcode": "0"}]},
+                       {"Headers": "data"}),
                       # config with new values and request overrides
                       # datacenterurl
-                      ([], default_config, None, None, None, None, None,
-                       None,
+                      ([], default_config, None, {"Headers": "data"}, None,
+                       None, None, None, None,
                        {'requestreference': '',
                         'responses': [{'errorcode': '10',
                                        'errordata':
@@ -159,11 +165,11 @@ request specified'],
                                        'errormessage':
                                            'Incorrect usage of the \
 Secure Trading API'},
-                                      ]}
-                       ),
+                                      ]},
+                       None),
 
-                      ([], french_config, None, None, None, None, None,
-                       None,
+                      ([], french_config, None, {"Headers": "data"}, None,
+                       None, None, None, None,
                        {'requestreference': '',
                         'responses': [{'errorcode': '10',
                                        'errordata':
@@ -174,10 +180,10 @@ request specified'],
                                        'errormessage':
                                            "Utilisation incorrecte de \
 l'API Secure Trading"},
-                                      ]}
-                       ),  # French version of the config
-                      ([], german_config, None, None, None, None, None,
-                       None,
+                                      ]},
+                       None),  # French version of the config
+                      ([], german_config, None, {"Headers": "data"}, None,
+                       None, None, None, None,
                        {'requestreference': '',
                         'responses': [{'errorcode': '10',
                                        'errordata':
@@ -188,11 +194,11 @@ request specified'],
                                        'errormessage':
                                            'Fehlerhafte Verwendung der Secure \
 Trading API'},
-                                      ]}
-                       ),  # German version of the config
+                                      ]},
+                       None),  # German version of the config
 
-                      (request2, default_config, None, connecterror("7"), None,
-                       None, None, None,
+                      (request2, default_config, None, {"Headers": "data"},
+                       connecterror("7"), None, None, None, None,
                        {"requestreference": request2["requestreference"],
                         "responses":
                             [{"requesttypedescription": "ERROR",
@@ -200,9 +206,10 @@ Trading API'},
                               "errorcode": "7",
                               "errormessage": "An issue occured whilst trying to \
 connect to Secure Trading servers",
-                              "errordata": []},
-                             ]}),
-                      (request2, default_config, None,
+                              "errordata": []}
+                             ]},
+                       None),
+                      (request2, default_config, None, {"Headers": "data"},
                        sendrecverror("4", connection_error), None, None, None,
                        None,
                        {"requestreference": request2["requestreference"],
@@ -214,13 +221,13 @@ connect to Secure Trading servers",
                               "errordata": ['7 {0} Maximum time reached whilst trying to \
 connect to https://somewhere.com'.format(request2["requestreference"])]
                               }]
-                        }
-                       ),
+                        },
+                       None),
                       (request1,
                        default_config,
                        '{"requestreference": \
 "NEWREFERENCE-866-98", "version": "1.00", "response": [{"errorcode" : "0" }]}',
-                       None,
+                       {"Headers": "data"}, None,
                        "https://webservices.securetrading.net/json/",
                        {"alias": "",
                         "libraryversion": lib_version,
@@ -238,12 +245,13 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
  please contact Secure Trading',
                               'errordata':
                                   ['Different request reference: sent ({0}) received\
- (NEWREFERENCE-866-98)'.format(request1["requestreference"])]}]}),
+ (NEWREFERENCE-866-98)'.format(request1["requestreference"])]}]},
+                       None),
                       (request1,
                        default_config,
                        '{"requestreference":: \
 "NEWREFERENCE-866-98", "version": "1.00", "response": []}',
-                       None,
+                       {"Headers": "data"}, None,
                        "https://webservices.securetrading.net/json/",
                        {"alias": "",
                         "libraryversion": lib_version,
@@ -261,11 +269,11 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
                               'errordata': jsonMessage,
                               }
                              ]
-                        }
-                       ),
+                        },
+                       None),
                       ({"requestreference": "myref"}, default_config,
                        request1_str.format("myref"),
-                       None,
+                       {"Headers": "data"}, None,
                        "https://webservices.securetrading.net/json/",
                        {"alias": "",
                         "libraryversion": lib_version,
@@ -278,10 +286,11 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
                         "version": "1.00",
                         "responses": [{"errormessage": "Ok",
                                        "errorcode": "0"
-                                       }]}),
+                                       }]},
+                       None),
                       (request4, default_config,
                        request4_str.format(request4["requestreference"]),
-                       None,
+                       {"Headers": "data"}, None,
                        "https://webservices.securetrading.net/json/",
                        {"alias": "",
                         "libraryversion": lib_version,
@@ -292,16 +301,17 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
                         "version": "1.00",
                         "responses": [{"errormessage": "GATEWAYERRMSG",
                                        "errorcode": "99"
-                                       }]}),
+                                       }]},
+                       None),
                       ]
 
         http_main = st_httpclient.GenericHTTPClient._main
         try:
-            for (request, config, http_result, http_raises,
+            for (request, config, http_result, http_headers, http_raises,
                  http_url, http_json_dict, exp_raises, exp_message,
-                 exp_result) in test_cases:
+                 exp_result, exp_headers) in test_cases:
                 st_httpclient.GenericHTTPClient._main = self.mock_method(
-                    result=http_result,
+                    result=(http_result, http_headers),
                     exception=http_raises)
                 api = securetrading.Api(config=config)
                 if exp_raises is None:
@@ -312,6 +322,7 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
                         actual_json_dict = json.loads(sent_to_mock[0][0][2])
                         self.assertEqual(actual_url, http_url)
                         self.assertEqual(actual_json_dict, http_json_dict)
+                    self.assertEqual(actual.pop("headers", None), exp_headers)
                     self.assertEqual(actual, exp_result)
                 else:
                     self.assertRaisesRegexp(

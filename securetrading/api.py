@@ -67,9 +67,12 @@ details
             url += "/json/"
             converter = securetrading.Converter(self.config)
             request_data = converter._encode(request)
-            response = http_client._main(url, request_data, request_reference,
-                                         request)
-            result = converter._decode(response, request_reference)
+            response, response_headers = http_client._main(url,
+                                                           request_data,
+                                                           request_reference,
+                                                           request)
+            result = converter._decode(response, response_headers,
+                                       request_reference)
             self._verify_result(result, request_reference)
         except securetrading.SecureTradingError as e:
             result = self._generate_st_error(e, request_reference)
