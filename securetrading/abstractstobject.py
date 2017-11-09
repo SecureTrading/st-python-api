@@ -29,14 +29,14 @@ automatic validation, if the value is invalid.
         for key in data:
             self.__setitem__(key, data[key])
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value, use_set_method=True):
         debug = "{0} Setting {1}".format(self.get("requestreference"), key)
         securetrading.util.logger.debug(debug)
         validate_method = "_validate_{0}".format(key)
         if hasattr(self, validate_method):
             getattr(self, validate_method)(value)
         set_method = "_set_{0}".format(key)
-        if hasattr(self, set_method):
+        if use_set_method and hasattr(self, set_method):
             getattr(self, set_method)(value)
         else:
             super(AbstractStObject, self).__setitem__(key, value)

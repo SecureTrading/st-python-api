@@ -43,7 +43,7 @@ the fields to send.
             self.get("requestreference"), result)
         securetrading.util.logger.debug(debug)
         for key, value in result.items():
-            super(AbstractStObject, self).__setitem__(key, value)
+            self.__setitem__(key, value, use_set_method=False)
 
 
 class Requests(Request):
