@@ -5,7 +5,6 @@ from securetrading.test import abstract_test
 import securetrading
 import securetrading.httpclient as st_httpclient
 import json
-import platform
 
 
 class Test_Api(abstract_test.TestCase):
@@ -38,9 +37,6 @@ class Test_Api(abstract_test.TestCase):
         connecterror = securetrading.ConnectionError
         sendrecverror = securetrading.SendReceiveError
 
-        versioninfo = "Python::{0}::1.0.12::{1}".format(
-            platform.python_version(),
-            platform.platform())
         request1 = self.get_securetrading_request({})
         request4 = self.get_securetrading_request({})
         default_config = self.get_config()
@@ -64,12 +60,11 @@ class Test_Api(abstract_test.TestCase):
         request1_str2 = '{{"requestreference":"{0}",\
 "version":"1.00", "response":[]}}'
         request1_dict = {"requestreference": request1["requestreference"],
-                         "versioninfo": versioninfo}
+                         "versioninfo": self.version_info}
 
         request2_str = '{{"requestreference": "{0}",\
 "version": "1.00", "response": [{{"errorcode" : "0"}}]}}'
 
-        lib_version = "python_1.0.12"
         msg = "{0} Maximum time reached whilst trying to connect to {1}\
 ".format(request2["requestreference"], request2["datacenterurl"])
         connection_error = connecterror("7", data=[msg])
@@ -81,7 +76,7 @@ class Test_Api(abstract_test.TestCase):
             {"requestreference": "requestreference"})
 
         request4_dict = {"requestreference": request4["requestreference"],
-                         "versioninfo": versioninfo}
+                         "versioninfo": self.version_info}
 
         request4_str = '{{"requestreference": "{0}",\
 "version": "1.00", "response": [{{"errormessage": "GATEWAYERRMSG",\
@@ -94,7 +89,7 @@ class Test_Api(abstract_test.TestCase):
                        {"Headers": "data"}, None,
                        "https://webservices.securetrading.net/json/",
                        {"alias": "",
-                        "libraryversion": lib_version,
+                        "libraryversion": self.lib_version,
                         "request": [request1_dict],
                         "version": "1.00"},
                        None, None,
@@ -109,7 +104,7 @@ class Test_Api(abstract_test.TestCase):
                        request1_str.format(request1["requestreference"]),
                        {"Headers": "data"}, None, "https://test.com/json/",
                        {"alias": "test",
-                        "libraryversion": lib_version,
+                        "libraryversion": self.lib_version,
                         "request": [request1_dict],
                         "version": "2.00"},
                        None, None,
@@ -124,7 +119,7 @@ class Test_Api(abstract_test.TestCase):
                        request1_str2.format(request1["requestreference"]),
                        {"Accept": "*/*"}, None, "https://test.com/json/",
                        {"alias": "test",
-                        "libraryversion": lib_version,
+                        "libraryversion": self.lib_version,
                         "request": [request1_dict],
                         "version": "2.00"},
                        None, None,
@@ -138,11 +133,11 @@ class Test_Api(abstract_test.TestCase):
                        {"Headers": "data"}, None,
                        "https://somewhere.com/json/",
                        {"alias": "test",
-                        "libraryversion": lib_version,
+                        "libraryversion": self.lib_version,
                         "request": [{"requestreference":
                                      request2["requestreference"],
                                      "datacenterurl": "https://somewhere.com",
-                                     "versioninfo": versioninfo,
+                                     "versioninfo": self.version_info,
                                      }],
                         "version": "2.00"},
                        None, None,
@@ -230,10 +225,10 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
                        {"Headers": "data"}, None,
                        "https://webservices.securetrading.net/json/",
                        {"alias": "",
-                        "libraryversion": lib_version,
+                        "libraryversion": self.lib_version,
                         "request":
                         [{"requestreference": request1["requestreference"],
-                          "versioninfo":versioninfo}],
+                          "versioninfo":self.version_info}],
                         "version": "1.00"},
                        None, None,
                        {"requestreference": request1["requestreference"],
@@ -254,10 +249,10 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
                        {"Headers": "data"}, None,
                        "https://webservices.securetrading.net/json/",
                        {"alias": "",
-                        "libraryversion": lib_version,
+                        "libraryversion": self.lib_version,
                         "request":
                         [{"requestreference": request1["requestreference"],
-                          "versioninfo":versioninfo}],
+                          "versioninfo":self.version_info}],
                         "version": "1.00"},
                        None, None,
                        {"requestreference": request1["requestreference"],
@@ -276,9 +271,9 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
                        {"Headers": "data"}, None,
                        "https://webservices.securetrading.net/json/",
                        {"alias": "",
-                        "libraryversion": lib_version,
+                        "libraryversion": self.lib_version,
                         "request": [{"requestreference": "myref",
-                                     "versioninfo": versioninfo,
+                                     "versioninfo": self.version_info,
                                      }],
                         "version": "1.00"},
                        None, None,
@@ -293,7 +288,7 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
                        {"Headers": "data"}, None,
                        "https://webservices.securetrading.net/json/",
                        {"alias": "",
-                        "libraryversion": lib_version,
+                        "libraryversion": self.lib_version,
                         "request": [request4_dict],
                         "version": "1.00"},
                        None, None,

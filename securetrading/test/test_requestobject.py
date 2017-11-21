@@ -2,7 +2,6 @@
 import unittest
 import securetrading
 from securetrading.test import abstract_test_stobjects
-import platform
 
 
 class Test_Request(abstract_test_stobjects.Abstract_Test_StObjects):
@@ -14,11 +13,7 @@ class Test_Request(abstract_test_stobjects.Abstract_Test_StObjects):
     def test___init__(self):
         request = self.class_()
         self.assertRegexpMatches(request["requestreference"], "A[a-z0-9]+")
-        os = platform.platform()
-        python_version = platform.python_version()
-        original_version = securetrading.__version__
-        expected = "Python::{0}::1.0.12::{1}".format(python_version, os)
-        self.assertEqual(securetrading.version_info, expected)
+        self.assertEqual(securetrading.version_info, self.version_info)
 
     def test__set_cachetoken(self):
         exp1 = self.get_securetrading_request(

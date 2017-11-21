@@ -28,10 +28,9 @@ class Test_Converter(abstract_test.TestCase):
         return converter
 
     def test__encode(self):
-        lib_version = "python_1.0.12"
         requestblock = {"alias": "test@testing.com",
                         "version": "1.00",
-                        "libraryversion": lib_version,
+                        "libraryversion": self.lib_version,
                         "request": [],
                         }
 
@@ -63,7 +62,7 @@ class Test_Converter(abstract_test.TestCase):
 
         currencyrate_exp = {"alias": "diff@different.com",
                             "version": "2.20",
-                            "libraryversion": lib_version,
+                            "libraryversion": self.lib_version,
                             "request": [currencyrate_data],
                             }
 
