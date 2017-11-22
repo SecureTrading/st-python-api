@@ -5,7 +5,6 @@ import platform
 import pkgutil
 import securetrading.util as util
 import os
-import platform
 
 
 class TestCase(unittest.TestCase):
@@ -17,7 +16,7 @@ class TestCase(unittest.TestCase):
         self.utf8_uni = self.uni.encode("utf-8")
         self.byt_uni = self.uni.encode("latin-1")
         self.mock_receive = []
-        self.version = "1.0.13"
+        self.version = "1.0.14"
         self.lib_version = "python_{0}".format(self.version)
         self.version_info = "Python::{0}::{1}::{2}".format(
             platform.python_version(),
