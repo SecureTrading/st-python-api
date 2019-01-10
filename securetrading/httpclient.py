@@ -98,7 +98,7 @@ class GenericHTTPClient(object):
         try:
             self._connect(url)
         except Exception as e:
-            debug = "{0} Connect error: {0}".format(request_reference, e)
+            debug = "{0} Connect error: {1}".format(request_reference, e)
             securetrading.util.logger.debug(debug, exc_info=True)
             raise securetrading.ConnectionError("7", data=e)
         conn_time_taken = time.time() - connect_start

@@ -28,8 +28,8 @@ class Test_util(abstract_test.TestCase):
             check_unique = 100
             for i in range(check_unique):
                 actual = util._get_random(length, all_chars=all_chars)
-                regex = "[{0}]{{1}}".format(re.escape("".join(all_chars)),
-                                            length)
+                regex = "[{0}]{{{1}}}".format(re.escape("".join(all_chars)),
+                                              length)
                 self.assertRegexpMatches(actual, regex,
                                          msg="Result {0} != {1}".
                                          format(actual, regex))
