@@ -5,6 +5,7 @@ import platform
 import pkgutil
 import securetrading.util as util
 import os
+import six
 
 
 class TestCase(unittest.TestCase):
@@ -16,7 +17,7 @@ class TestCase(unittest.TestCase):
         self.utf8_uni = self.uni.encode("utf-8")
         self.byt_uni = self.uni.encode("latin-1")
         self.mock_receive = []
-        self.version = "1.0.14"
+        self.version = "1.0.15"
         self.lib_version = "python_{0}".format(self.version)
         self.version_info = "Python::{0}::{1}::{2}".format(
             platform.python_version(),
@@ -103,6 +104,6 @@ class TestCase(unittest.TestCase):
                     # a blank string as the expected
                     self.assertEqual(act, exp)
                 else:
-                    self.assertRegexpMatches(act, exp)
+                    six.assertRegex(self, act, exp)
             self.assertEqual(error_obj._english, expected_english)
             self.assertEqual(error_obj.code, expected_code)

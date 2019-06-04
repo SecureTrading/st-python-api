@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import unittest
 from securetrading.test import abstract_test
 import securetrading
+import six
 
 
 class Test_Config(abstract_test.TestCase):
@@ -25,12 +26,12 @@ class Test_Config(abstract_test.TestCase):
                 config.http_proxy = proxy_value
                 self.assertEqual(proxy_value, config.http_proxy)
             else:
-                self.assertRaisesRegexp(exp_exception,
-                                        exp_message,
-                                        setattr,
-                                        config,
-                                        "http_proxy",
-                                        proxy_value)
+                six.assertRaisesRegex(self, exp_exception,
+                                      exp_message,
+                                      setattr,
+                                      config,
+                                      "http_proxy",
+                                      proxy_value)
 
     def test_http_max_allowed_connection_time(self):
         config = securetrading.Config()
@@ -49,12 +50,12 @@ class Test_Config(abstract_test.TestCase):
                 self.assertEqual(max_value,
                                  config.http_max_allowed_connection_time)
             else:
-                self.assertRaisesRegexp(exp_exception,
-                                        exp_message,
-                                        setattr,
-                                        config,
-                                        "http_max_allowed_connection_time",
-                                        max_value)
+                six.assertRaisesRegex(self, exp_exception,
+                                      exp_message,
+                                      setattr,
+                                      config,
+                                      "http_max_allowed_connection_time",
+                                      max_value)
 
     def test_http_connect_timeout(self):
         config = securetrading.Config()
@@ -72,12 +73,12 @@ class Test_Config(abstract_test.TestCase):
                 config.http_connect_timeout = timeout_value
                 self.assertEqual(timeout_value, config.http_connect_timeout)
             else:
-                self.assertRaisesRegexp(exp_exception,
-                                        exp_message,
-                                        setattr,
-                                        config,
-                                        "http_connect_timeout",
-                                        timeout_value)
+                six.assertRaisesRegex(self, exp_exception,
+                                      exp_message,
+                                      setattr,
+                                      config,
+                                      "http_connect_timeout",
+                                      timeout_value)
 
     def test_http_receive_timeout(self):
         config = securetrading.Config()
@@ -95,12 +96,12 @@ class Test_Config(abstract_test.TestCase):
                 config.http_receive_timeout = timeout_value
                 self.assertEqual(timeout_value, config.http_receive_timeout)
             else:
-                self.assertRaisesRegexp(exp_exception,
-                                        exp_message,
-                                        setattr,
-                                        config,
-                                        "http_receive_timeout",
-                                        timeout_value)
+                six.assertRaisesRegex(self, exp_exception,
+                                      exp_message,
+                                      setattr,
+                                      config,
+                                      "http_receive_timeout",
+                                      timeout_value)
 
     def test_http_max_retries(self):
         config = securetrading.Config()
@@ -118,12 +119,12 @@ class Test_Config(abstract_test.TestCase):
                 config.http_max_retries = max_value
                 self.assertEqual(max_value, config.http_max_retries)
             else:
-                self.assertRaisesRegexp(exp_exception,
-                                        exp_message,
-                                        setattr,
-                                        config,
-                                        "http_max_retries",
-                                        max_value)
+                six.assertRaisesRegex(self, exp_exception,
+                                      exp_message,
+                                      setattr,
+                                      config,
+                                      "http_max_retries",
+                                      max_value)
 
     def test_http_retry_sleep(self):
         config = securetrading.Config()
@@ -141,12 +142,12 @@ class Test_Config(abstract_test.TestCase):
                 config.http_retry_sleep = sleep_value
                 self.assertEqual(sleep_value, config.http_retry_sleep)
             else:
-                self.assertRaisesRegexp(exp_exception,
-                                        exp_message,
-                                        setattr,
-                                        config,
-                                        "http_retry_sleep",
-                                        sleep_value)
+                six.assertRaisesRegex(self, exp_exception,
+                                      exp_message,
+                                      setattr,
+                                      config,
+                                      "http_retry_sleep",
+                                      sleep_value)
 
     def test_http_response_headers(self):
         config = securetrading.Config()
@@ -168,12 +169,12 @@ header is returned"
                 config.http_response_headers = sleep_value
                 self.assertEqual(exp_value, config.http_response_headers)
             else:
-                self.assertRaisesRegexp(exp_exception,
-                                        exp_message,
-                                        setattr,
-                                        config,
-                                        "http_response_headers",
-                                        sleep_value)
+                six.assertRaisesRegex(self, exp_exception,
+                                      exp_message,
+                                      setattr,
+                                      config,
+                                      "http_response_headers",
+                                      sleep_value)
 
     def test_datacenterurl(self):
         config = securetrading.Config()
@@ -276,12 +277,13 @@ header is returned"
                 config.locale = locale
                 self.assertEqual(locale, config.locale)
             else:
-                self.assertRaisesRegexp(exp_exception,
-                                        exp_message,
-                                        setattr,
-                                        config,
-                                        "locale",
-                                        locale)
+                six.assertRaisesRegex(self, exp_exception,
+                                      exp_message,
+                                      setattr,
+                                      config,
+                                      "locale",
+                                      locale)
+
 
 if __name__ == "__main__":
     unittest.main()

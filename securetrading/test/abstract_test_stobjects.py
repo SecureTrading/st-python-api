@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from securetrading.test import abstract_test
+import six
 
 
 class Abstract_Test_StObjects(abstract_test.TestCase):
@@ -13,9 +14,9 @@ class Abstract_Test_StObjects(abstract_test.TestCase):
         for s in ["_set_test", "_validate_testing"]:
             setattr(generic_stobject, s, self.mock_method(
                     exception=Exception("{0} called".format(s))))
-            self.assertRaisesRegexp(Exception, "{0} called".format(s),
-                                    generic_stobject.__setitem__,
-                                    s.split("_")[-1], "VALUE")
+            six.assertRaisesRegex(self, Exception, "{0} called".format(s),
+                                  generic_stobject.__setitem__,
+                                  s.split("_")[-1], "VALUE")
 
         generic_stobject.__setitem__("newkey", "newvalue")
         self.assertEqual(generic_stobject["newkey"], "newvalue")

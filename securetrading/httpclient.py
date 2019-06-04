@@ -22,6 +22,7 @@ def _get_requests_lib():
         raise securetrading.SecureTradingError("2", data=data)
     return requests
 
+
 requests = _get_requests_lib()
 
 

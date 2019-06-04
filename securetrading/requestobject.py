@@ -32,7 +32,10 @@ the fields to send.
 
     def _set_cachetoken(self, cachetoken):
         try:
-            json_cachetoken = base64.decodestring(cachetoken.encode("ascii"))
+            met = getattr(base64, "decodebytes", None)
+            if met is None:
+                met = base64.decodestring
+            json_cachetoken = met(cachetoken.encode("ascii"))
             data = securetrading.util.json.loads(
                 json_cachetoken.decode("utf-8")
                 )

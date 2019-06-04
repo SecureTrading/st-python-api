@@ -2,6 +2,7 @@
 import unittest
 import securetrading
 from securetrading.test import abstract_test_stobjects
+import six
 
 
 class Test_Request(abstract_test_stobjects.Abstract_Test_StObjects):
@@ -12,7 +13,7 @@ class Test_Request(abstract_test_stobjects.Abstract_Test_StObjects):
 
     def test___init__(self):
         request = self.class_()
-        self.assertRegexpMatches(request["requestreference"], "A[a-z0-9]+")
+        six.assertRegex(self, request["requestreference"], "A[a-z0-9]+")
         self.assertEqual(securetrading.version_info, self.version_info)
 
     def test__set_cachetoken(self):
@@ -104,9 +105,9 @@ outer 'securetrading.Requests' object"]),
             if exp_exception is None:
                 requests = get_requests(requests_list)
             else:
-                self.assertRaisesRegexp(exp_exception, exp_message,
-                                        get_requests,
-                                        requests_list)
+                six.assertRaisesRegex(self, exp_exception, exp_message,
+                                      get_requests,
+                                      requests_list)
 
 
 if __name__ == "__main__":
