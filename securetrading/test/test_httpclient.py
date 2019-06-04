@@ -12,6 +12,7 @@ from requests.exceptions import ConnectionError as RequestsConnectionError
 from requests.exceptions import RequestException
 import platform
 import time
+import six
 
 
 class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
@@ -184,9 +185,9 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
     def test__get_connection_time_out(self):
         tests = [(time.time(), 10, 5, False, "5"),
                  # The regular expressions due to changes in box times
-                 (time.time(), 4, 5, False, "[34].\d+"),
-                 (time.time()-2, 4, 5, False, "[12].\d+"),
-                 (time.time()-2, 4, 3, False, "[12].\d+"),
+                 (time.time(), 4, 5, False, "[34].\\d+"),
+                 (time.time()-2, 4, 5, False, "[12].\\d+"),
+                 (time.time()-2, 4, 3, False, "[12].\\d+"),
                  ]
 
         config = securetrading.Config()
@@ -199,8 +200,8 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
             (timed_out, connection_time) = client._get_connection_time_out(
                 start_time)
             self.assertEqual(timed_out, expected_timed_out)
-            self.assertRegexpMatches("{0}".format(connection_time),
-                                     expected_connection_time)
+            six.assertRegex(self, "{0}".format(connection_time),
+                            expected_connection_time)
 
     def test__main(self):
 
@@ -483,6 +484,7 @@ whilst trying to connect to https://www.securetrading.com"]
 
             actual = self.http_client._get_response_headers()
             self.assertEqual(actual, exp_headers)
+
 
 if __name__ == "__main__":
     unittest.main()

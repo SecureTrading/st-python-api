@@ -29,6 +29,12 @@ def get_args():
                              help="Sets the sleep time for parent transactions\
  to be fully processed in seconds. Default: %(default)d")
 
+    args_parser.add_argument("--datacenterurl", action="store",
+                             dest="datacenterurl",
+                             default="https://webservices.securetrading.net",
+                             help="Sets the datacenter to use to process the\
+ transactions. Default: %(default)s")
+
     (passed_args, unittest_args) = args_parser.parse_known_args()
     return passed_args, unittest_args
 
@@ -60,6 +66,7 @@ class Module_Test_Api(abstract_test.TestCase):
 
         username = passed_args.username
         password = passed_args.password
+        datacenterurl = passed_args.datacenterurl
         ssl_cert_file = passed_args.overridecacerts
         base_path = self.get_package_path()
 
@@ -68,12 +75,14 @@ class Module_Test_Api(abstract_test.TestCase):
         st_config.username = username
         st_config.password = password
         st_config.ssl_certificate_file = ssl_cert_file
+        st_config.datacenterurl = datacenterurl
 
         # st_api2 is intentionally using bad credentials.
         st_config2 = securetrading.Config()
         st_config2.username = "UNKNOWN"
         st_config2.password = "PASS"
         st_config2.ssl_certificate_file = ssl_cert_file
+        st_config2.datacenterurl = datacenterurl
 
         # st_api3 is intentionally using a corrupt cacerts file.
         st_config3 = securetrading.Config()
@@ -81,6 +90,7 @@ class Module_Test_Api(abstract_test.TestCase):
         st_config3.password = password
         st_config3.ssl_certificate_file = os.path.join(base_path,
                                                        "test/badcacert.pem")
+        st_config3.datacenterurl = datacenterurl
 
         # st_api4 is intentionally using a cacerts file that is not our ca.
         st_config4 = securetrading.Config()
@@ -88,6 +98,7 @@ class Module_Test_Api(abstract_test.TestCase):
         st_config4.password = password
         st_config4.ssl_certificate_file = os.path.join(base_path,
                                                        "test/testcacert.pem")
+        st_config4.datacenterurl = datacenterurl
 
         # st_api valid credentials fr setup
         st_config_fr = securetrading.Config()
@@ -95,6 +106,7 @@ class Module_Test_Api(abstract_test.TestCase):
         st_config_fr.password = password
         st_config_fr.ssl_certificate_file = ssl_cert_file
         st_config_fr.locale = "fr_fr"
+        st_config_fr.datacenterurl = datacenterurl
 
         # st_api valid credentials de setup
         st_config_de = securetrading.Config()
@@ -102,6 +114,7 @@ class Module_Test_Api(abstract_test.TestCase):
         st_config_de.password = password
         st_config_de.ssl_certificate_file = ssl_cert_file
         st_config_de.locale = "de_de"
+        st_config_de.datacenterurl = datacenterurl
 
         # st_api valid credentials with Content-type response header
         st_config_content_type = securetrading.Config()
@@ -109,6 +122,7 @@ class Module_Test_Api(abstract_test.TestCase):
         st_config_content_type.password = password
         st_config_content_type.ssl_certificate_file = ssl_cert_file
         st_config_content_type.http_response_headers = ["content-type"]
+        st_config_content_type.datacenterurl = datacenterurl
 
         # initialise all the st_api objects with their respective config
         self.st_api = securetrading.Api(st_config)

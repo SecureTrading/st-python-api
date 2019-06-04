@@ -29,11 +29,12 @@ class Test_PhraseBook(abstract_test.TestCase):
                     setattr(config, key, configData[key])
                 phrasebook = securetrading.PhraseBook(config)
                 for message in expected:
-                    self.assertEquals(expected[message],
-                                      phrasebook.lookup(message),
-                                      )
+                    self.assertEqual(expected[message],
+                                     phrasebook.lookup(message),
+                                     )
         finally:
             securetrading.phrase_book = tmp_phrase_book
+
 
 if __name__ == "__main__":
     unittest.main()

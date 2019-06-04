@@ -6,6 +6,7 @@ import securetrading
 import securetrading.util as util
 from securetrading.test import abstract_test
 import sys
+import six
 
 
 class Test_util(abstract_test.TestCase):
@@ -30,9 +31,9 @@ class Test_util(abstract_test.TestCase):
                 actual = util._get_random(length, all_chars=all_chars)
                 regex = "[{0}]{{{1}}}".format(re.escape("".join(all_chars)),
                                               length)
-                self.assertRegexpMatches(actual, regex,
-                                         msg="Result {0} != {1}".
-                                         format(actual, regex))
+                six.assertRegex(self, actual, regex,
+                                msg="Result {0} != {1}".
+                                format(actual, regex))
                 results.add(actual)
             msg = "Not all generated results were unique {0} != {1}".\
                 format(len(results), check_unique)
@@ -80,6 +81,7 @@ kontaktieren Sie bitte Secure Trading"),
             phrasebook = securetrading.PhraseBook(config)
             actual = util._get_errormessage(code, gateway_err_msg, phrasebook)
             self.assertEqual(expected, actual)
+
 
 if __name__ == "__main__":
     unittest.main()

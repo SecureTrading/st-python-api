@@ -43,6 +43,6 @@ setup(
     install_requires=['requests >= 2.9.0'],
     test_suite="securetrading.test.all",
     extras_require={
-        'test': ['pep8'],
+        'test': ['pep8','six'],
     },
 )
