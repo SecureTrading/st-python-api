@@ -32,7 +32,7 @@ def get_args():
     args_parser.add_argument("--datacenterurl", action="store",
                              dest="datacenterurl",
                              default="https://webservices.securetrading.net",
-                             help="Sets the datacenter to use to process the\
+                             help="Sets the datacenter URL to use to process the\
  transactions. Default: %(default)s")
 
     (passed_args, unittest_args) = args_parser.parse_known_args()

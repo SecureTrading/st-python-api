@@ -43,6 +43,7 @@ class Test_Api(abstract_test.TestCase):
         config1 = self.get_config({"username": "test",
                                    "jsonversion": "2.00",
                                    "datacenterurl": "https://test.com",
+                                   "datacenterpath": '/some/path/',
                                    "http_response_headers": ["headers"],
                                    })
 
@@ -53,7 +54,8 @@ class Test_Api(abstract_test.TestCase):
                                          })
 
         request2 = self.get_securetrading_request(
-            {"datacenterurl": "https://somewhere.com"})
+            {"datacenterurl": "https://somewhere.com",
+             "datacenterpath": "/some/other/path/"})
 
         request1_str = '{{"requestreference":"{0}",\
 "version":"1.00", "response":[{{"errorcode" : "0"}}]}}'
@@ -102,7 +104,8 @@ class Test_Api(abstract_test.TestCase):
                       # config with new values instead of defaults
                       (request1, config1,
                        request1_str.format(request1["requestreference"]),
-                       {"Headers": "data"}, None, "https://test.com/json/",
+                       {"Headers": "data"}, None,
+                       "https://test.com/some/path/",
                        {"alias": "test",
                         "libraryversion": self.lib_version,
                         "request": [request1_dict],
@@ -117,7 +120,7 @@ class Test_Api(abstract_test.TestCase):
                       # config with new values instead of defaults
                       (request1, config1,
                        request1_str2.format(request1["requestreference"]),
-                       {"Accept": "*/*"}, None, "https://test.com/json/",
+                       {"Accept": "*/*"}, None, "https://test.com/some/path/",
                        {"alias": "test",
                         "libraryversion": self.lib_version,
                         "request": [request1_dict],
@@ -131,12 +134,13 @@ class Test_Api(abstract_test.TestCase):
                       (request2, config1,
                        request2_str.format(request2["requestreference"]),
                        {"Headers": "data"}, None,
-                       "https://somewhere.com/json/",
+                       "https://somewhere.com/some/other/path/",
                        {"alias": "test",
                         "libraryversion": self.lib_version,
                         "request": [{"requestreference":
                                      request2["requestreference"],
                                      "datacenterurl": "https://somewhere.com",
+                                     "datacenterpath": "/some/other/path/",
                                      "versioninfo": self.version_info,
                                      }],
                         "version": "2.00"},

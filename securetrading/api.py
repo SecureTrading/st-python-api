@@ -64,7 +64,7 @@ details
                                                  self.config)
             request.verify()
             url = request.get("datacenterurl", self.config.datacenterurl)
-            url += "/json/"
+            url += request.get("datacenterpath", self.config.datacenterpath)
             converter = securetrading.Converter(self.config)
             request_data = converter._encode(request)
             response, response_headers = http_client._main(url,
