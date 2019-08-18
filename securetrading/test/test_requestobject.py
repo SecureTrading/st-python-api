@@ -19,6 +19,7 @@ class Test_Request(abstract_test_stobjects.Abstract_Test_StObjects):
     def test__set_cachetoken(self):
         exp1 = self.get_securetrading_request(
             {"datacenterurl": "https://webservices.securetrading.net",
+             "datacenterpath": "/json/",
              "cachetoken":
                  "17-ae7e511172a07c2fb45db4c73388087e4d850777386a5d72029aaf895\
 87f3cf0"})
@@ -34,9 +35,10 @@ class Test_Request(abstract_test_stobjects.Abstract_Test_StObjects):
             {"cachetoken": "eyJkYXRhY2VudGVydXJsIjogImh0dHBzOi8vd2Vic2VydmljZX\
 Muc2VjdXJldHJhZGluZy5uZXQiLCAiY2FjaGV0b2tlbiI6ICIxNy1hZTdlNTExMTcy"})
 
-        tests = [('eyJkYXRhY2VudGVydXJsIjogImh0dHBzOi8vd2Vic2VydmljZXMuc2VjdXJ\
-ldHJhZGluZy5uZXQiLCAiY2FjaGV0b2tlbiI6ICIxNy1hZTdlNTExMTcyYTA3YzJmYjQ1ZGI0YzczM\
-zg4MDg3ZTRkODUwNzc3Mzg2YTVkNzIwMjlhYWY4OTU4N2YzY2YwIn0=', exp1),
+        tests = [('eyJkYXRhY2VudGVycGF0aCI6ICIvanNvbi8iLCAiZGF0YWNlbnRlcnVybCI\
+6ICJodHRwczovL3dlYnNlcnZpY2VzLnNlY3VyZXRyYWRpbmcubmV0IiwgImNhY2hldG9rZW4iOiAiM\
+TctYWU3ZTUxMTE3MmEwN2MyZmI0NWRiNGM3MzM4ODA4N2U0ZDg1MDc3NzM4NmE1ZDcyMDI5YWFmODk\
+1ODdmM2NmMCJ9', exp1),
                  ('"eyJkYXRhY2VudGVydXJsIjogImh0dHBzOi8vd2Vic2VydmljZXMuc2VjdX\
 JldHJhZGluZy5uZXQiLCAiY2FjaGV0b2tlbiI6ICIxNy02YTAyODdkZDA0NDk3YmE4ZGFiMjU3YWNi\
 ZDk4Mzc0MWY1NTQxMGI1YzcwOTQ2MzdkOGMzZjBmYjU3YmQyNWVjIn0=', exp2),
@@ -75,6 +77,10 @@ class Test_Requests(Test_Request):
         requests4 = get_requests(
             [get_request({"a": "b"}),
              get_request(datacenter_url_dict)])
+        datacenter_path_dict = {"datacenterpath": "path"}
+        requests5 = get_requests(
+            [get_request({"a": "b"}),
+             get_request(datacenter_path_dict)])
 
         tests = [(requests1, None, None, None, None),
                  (requests2, None, None, None, None),
@@ -83,6 +89,11 @@ class Test_Requests(Test_Request):
                   "10", "10 The key 'datacenterurl' must be specifed \
 in the outer 'securetrading.Requests' object",
                   ["The key 'datacenterurl' must be specifed in the \
+outer 'securetrading.Requests' object"]),
+                 (requests5, securetrading.ApiError,
+                  "10", "10 The key 'datacenterpath' must be specifed \
+in the outer 'securetrading.Requests' object",
+                  ["The key 'datacenterpath' must be specifed in the \
 outer 'securetrading.Requests' object"]),
                  ]
 

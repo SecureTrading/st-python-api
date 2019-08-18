@@ -12,7 +12,7 @@ API will use."""
 
     __slots__ = ["_username", "_jsonversion", "_http_receive_timeout",
                  "_http_max_retries", "_http_retry_sleep", "_username",
-                 "_password", "_datacenterurl",
+                 "_password", "_datacenterurl", "_datacenterpath",
                  "_http_max_allowed_connection_time",
                  "_http_connect_timeout",
                  "_http_response_headers",
@@ -43,6 +43,7 @@ default values that can then be overridden.
         self._username = ""
         self._password = ""
         self._datacenterurl = "https://webservices.securetrading.net"
+        self._datacenterpath = "/json/"
         self._http_proxy = None
         self._ssl_certificate_file = None
         self._libraryversion = securetrading.__version__
@@ -207,6 +208,31 @@ use to connect to Secure Trading.
     @datacenterurl.setter
     def datacenterurl(self, value):
         self._datacenterurl = value
+
+    @property
+    def datacenterpath(self):
+        """The Secure Trading data center path.
+
+        This property holds the data center path that the API will
+use to connect to Secure Trading.
+
+        Args:
+           value: (optional [string]) The path of the data center.
+
+        Returns:
+           The Secure Trading data center path.
+
+        Usage:
+          >>> config.datacenterpath = "/json/"
+          or
+          >>> datacenterpath = config.datacenterpath
+
+        """
+        return self._datacenterpath
+
+    @datacenterpath.setter
+    def datacenterpath(self, value):
+        self._datacenterpath = value
 
     @property
     def jsonversion(self):

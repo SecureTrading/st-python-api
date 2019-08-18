@@ -67,8 +67,8 @@ the incorrect location within the object.
             data = "missing key requests"
             raise securetrading.ApiError("10", data=[data])
         for request in self.get("requests", []):
-            for key in ["datacenterurl"]:
-                # Ensures we can only override the datacenterurl in one place
+            for key in ["datacenterurl", "datacenterpath"]:
+                # Ensures we can only override the url/path in one place
                 if key in request:
                     data = "The key '{0}' must be specifed in the outer \
 'securetrading.Requests' object".format(key)

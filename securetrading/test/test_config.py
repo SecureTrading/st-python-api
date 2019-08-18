@@ -194,6 +194,24 @@ header is returned"
             config.datacenterurl = set_value
             self.assertEqual(exp_value, config.datacenterurl)
 
+    def test_datacenterpath(self):
+        config = securetrading.Config()
+        self.assertEqual("/json/",
+                         config.datacenterpath)
+        tests = [("2.45", "2.45"),
+                 (8.65, 8.65),
+                 ("/some/path/", "/some/path/"),
+                 (3, 3),
+                 ([3, "3", 2.5], [3, "3", 2.5]),
+                 ({"value": 2}, {"value": 2}),
+                 (None, None),
+                 ("", ""),
+                 ]
+
+        for set_value, exp_value in tests:
+            config.datacenterpath = set_value
+            self.assertEqual(exp_value, config.datacenterpath)
+
     def test_jsonversion(self):
         config = securetrading.Config()
         self.assertEqual("1.00", config.jsonversion)
