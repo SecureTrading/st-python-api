@@ -18,7 +18,7 @@ We recommend using at least Python 2.7.9  as any version prior to this may give 
 Documentation
 ^^^^^^^^^^^^^
 
-Please see http://www.securetrading.com/support/document/category/web-services for the most up-to-date documentation.
+Please see https://docs.trustpayments.com/document/webservices-api/ for the most up-to-date documentation.
 
 Bugs
 ^^^^
