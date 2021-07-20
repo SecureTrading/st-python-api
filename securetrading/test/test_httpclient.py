@@ -424,7 +424,7 @@ whilst trying to connect to https://www.securetrading.com"]
                  (b"Different Text", 200, None, None,
                   None, None, (200, "Different Text")
                   ),
-                 (self.byt_uni, 200, None, None, None, None,
+                 (self.utf8_uni, 200, None, None, None, None,
                   (200, self.uni)),
                  (b"Invalid", 500, ConnectionError,
                   ["HTTP code 500"],
