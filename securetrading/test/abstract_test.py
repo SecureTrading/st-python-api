@@ -17,7 +17,7 @@ class TestCase(unittest.TestCase):
         self.utf8_uni = self.uni.encode("utf-8")
         self.byt_uni = self.uni.encode("latin-1")
         self.mock_receive = []
-        self.version = "1.0.19"
+        self.version = "1.0.20"
         self.lib_version = "python_{0}".format(self.version)
         self.version_info = "Python::{0}::{1}::{2}".format(
             platform.python_version(),
