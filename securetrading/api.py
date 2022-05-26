@@ -5,17 +5,17 @@ import securetrading.phrasebook as phrasebook
 
 
 class Api(object):
-    """Secure Trading Python API.
+    """Trust Payments Python API.
 
     This is the wrapper class that handles processing requests to
-Secure Trading and returns the response.
+Trust Payments and returns the response.
     """
 
     def __init__(self, config):
-        """Initialises the Secure Trading Python API.
+        """Initialises the Trust Payments Python API.
 
-        This method will initialise the Secure Trading Python API
-that can submit requests to Secure Trading and handle
+        This method will initialise the Trust Payments Python API
+that can submit requests to Trust Payments and handle
 the response. The API is thread-safe, therefore it can
 be used by multiple threads at the same time.
 
@@ -32,10 +32,10 @@ object containing various settings.
         super(Api, self).__init__()
 
     def process(self, request):
-        """Submits a request to be processed by Secure Trading.
+        """Submits a request to be processed by Trust Payments.
 
         This method takes the details of the request and then connects
-and sends the data to Secure Trading, waiting for a reply or timeout
+and sends the data to Trust Payments, waiting for a reply or timeout
 before returning the response.
 
         Args:
@@ -103,7 +103,7 @@ details
             raise securetrading.SecureTradingError("9", data=data)
 
     def _generate_error(self, e, request_reference):
-        excep = "Secure Trading API had an unexpected error"
+        excep = "Trust Payments API had an unexpected error"
         securetrading.util.logger.exception(excep)
         data = ["{0}".format("\n".join(e.args))]
         error = securetrading.SecureTradingError("9", data=data)

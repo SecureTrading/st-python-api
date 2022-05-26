@@ -13,7 +13,7 @@ try:
     import json  # pylint: disable=unused-import
 except ImportError:
     # Could use simplejson here if we wanted to.
-    raise ImportError("Secure Trading API requires a JSON library")
+    raise ImportError("Trust Payments API requires a JSON library")
 
 
 def _is_python_2():

@@ -26,7 +26,7 @@ setup(
     long_description=long_description,
     url='https://github.com/SecureTrading/st-python-api',
     author='Secure Trading',
-    author_email='devapi@securetrading.com',
+    author_email='devapi@trustpayments.com',
     license='MIT',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -37,7 +37,7 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Operating System :: OS Independent',
     ],
-    keywords='securetrading api python',
+    keywords='securetrading api python trustpayments',
     packages=["securetrading", "securetrading.test"],
     include_package_data=True,
     install_requires=['requests >= 2.9.0'],

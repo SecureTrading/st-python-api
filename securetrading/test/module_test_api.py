@@ -48,7 +48,7 @@ class Module_Test_Api(abstract_test.TestCase):
     def __init__(self, *args, **kwargs):
         super(Module_Test_Api, self).__init__(*args, **kwargs)
         self.sitereference = passed_args.sitereference
-        # Please contact Secure Trading support to set up a test site
+        # Please contact Trust Payments support to set up a test site
         # The following options are required.
         # A currency rate account for USD Visa
         # test account with the following:
@@ -176,6 +176,7 @@ class Module_Test_Api(abstract_test.TestCase):
 
         for parent_key, requesttypdescription, updates in parents_required:
             if parent_key.startswith("settled_auth"):
+                print(parent_responses)
                 p_ref = parent_responses["order"]["transactionreference"]
                 updates["parenttransactionreference"] = p_ref
                 paypaltoken = parent_responses["order"]["paypaltoken"]
@@ -267,7 +268,7 @@ class Module_Test_Api(abstract_test.TestCase):
                                  "customerfirstname": "John",
                                  "customerlastname": "Doe",
                                  "customerpremise": "1",
-                                 "customerpostcode": "AB12 3CD",
+                                 "customerpostcode": "AB12 3AB",
                                  },
                   "SUBSCRIPTION": {"subscriptionunit": "DAY",
                                    "subscriptiontype": "INSTALLMENT",
@@ -428,7 +429,7 @@ class Module_Test_Api(abstract_test.TestCase):
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "10",
                          "errormessage": "Incorrect usage of the\
- Secure Trading API",
+ Trust Payments API",
                          "errordata":
                          ["All types should be specified in unicode"],
                          "requesttypedescription": "ERROR",
@@ -461,7 +462,7 @@ class Module_Test_Api(abstract_test.TestCase):
         st_response = self.st_api.process(data)
         exp_resp_data = {"errorcode": "10",
                          "errormessage": "Incorrect usage of the\
- Secure Trading API",
+ Trust Payments API",
                          "requesttypedescription": "ERROR",
                          }
         exp_raw_resp = [exp_resp_data]
@@ -477,7 +478,7 @@ class Module_Test_Api(abstract_test.TestCase):
         st_response = self.st_api.process(data)
         exp_resp_data = {"errorcode": "10",
                          "errormessage": "Incorrect usage of the\
- Secure Trading API",
+ Trust Payments API",
                          "requesttypedescription": "ERROR",
                          }
 
@@ -537,7 +538,7 @@ class Module_Test_Api(abstract_test.TestCase):
 
         exp_resp_data = {"errorcode": "7",
                          "errormessage": "An issue occured whilst trying to\
- connect to Secure Trading servers",
+ connect to Trust Payments servers",
                          "errordata": [],
                          "requesttypedescription": "ERROR",
                          }
@@ -560,7 +561,7 @@ class Module_Test_Api(abstract_test.TestCase):
 
         exp_resp_data = {"errorcode": "7",
                          "errormessage": "An issue occured whilst\
- trying to connect to Secure Trading servers",
+ trying to connect to Trust Payments servers",
                          "errordata": [],
                          "requesttypedescription": "ERROR",
                          }
@@ -595,7 +596,7 @@ class Module_Test_Api(abstract_test.TestCase):
                          "billingcountryiso2a": "DE",
                          "billingfirstname": "FIRSTNAME",
                          "billinglastname": "last1",
-                         "billingpostcode": "AB45 6CB",
+                         "billingpostcode": "AB45 6AB",
                          "billingpremise": "789",
                          "billingstreet": "Street",
                          "billingtown": "Town",
@@ -622,7 +623,7 @@ class Module_Test_Api(abstract_test.TestCase):
                          "billingcountryiso2a": "DE",
                          "billingfirstname": "FIRSTNAME",
                          "billinglastname": "last1",
-                         "billingpostcode": "AB45 6CB",
+                         "billingpostcode": "AB45 6AB",
                          "billingpremise": "789",
                          "billingstreet": "Street",
                          "billingtown": "Town",

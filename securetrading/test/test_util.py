@@ -47,28 +47,28 @@ class Test_util(abstract_test.TestCase):
 
     def test__get_errormesage(self):
         tests = [({}, '1', 'GATEWAYERRMSG', 'Generic error'),
-                 ({}, '2', 'GATEWAYERRMSG', "Secure Trading API requires the\
+                 ({}, '2', 'GATEWAYERRMSG', "Trust Payments API requires the\
  'requests' library"),
                  ({}, '4', 'GATEWAYERRMSG', 'Send error'),
                  ({}, '5', 'GATEWAYERRMSG', 'Receive error'),
                  ({}, '6', 'GATEWAYERRMSG', 'Invalid credentials provided'),
                  ({}, '7', 'GATEWAYERRMSG', 'An issue occured whilst trying to\
- connect to Secure Trading servers'),
+ connect to Trust Payments servers'),
                  ({}, '8', 'GATEWAYERRMSG', 'Unexpected error connecting to\
- Secure Trading servers. If the problem persists please contact\
- support@securetrading.com'),
+ Trust Payments servers. If the problem persists please contact\
+ support@trustpayments.com'),
                  ({}, '9', 'GATEWAYERRMSG', 'Unknown error. If this persists \
-please contact Secure Trading'),
+please contact Trust Payments'),
                  ({"locale": "fr_fr"}, '1', 'GATEWAYERRMSG',
                   'Erreur g\xe9n\xe9rique'),
                  ({"locale": "fr_fr"}, '9', 'GATEWAYERRMSG',
                   "Erreur inconnue. Si cela persiste veuillez contacter \
-Secure Trading"),
+Trust Payments"),
                  ({"locale": "de_de"}, '1', 'GATEWAYERRMSG',
                   'Allgemeiner Fehler'),
                  ({"locale": "de_de"}, '9', 'GATEWAYERRMSG',
                   "Unbekannter Fehler. Wenn dieser weiterhin besteht, \
-kontaktieren Sie bitte Secure Trading"),
+kontaktieren Sie bitte Trust Payments"),
                  ({}, '99', "GATEWAYERRMSG", 'GATEWAYERRMSG'),
                  ({"locale": "fr_fr"}, '99', 'GATEWAYERRMSG', 'GATEWAYERRMSG'),
                  ({"locale": "de_de"}, '99', 'GATEWAYERRMSG', 'GATEWAYERRMSG'),

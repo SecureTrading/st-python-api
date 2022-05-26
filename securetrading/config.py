@@ -5,7 +5,7 @@ import securetrading
 
 
 class Config(object):
-    """The Secure Trading configuration object.
+    """The Trust Payments configuration object.
 
     This Object stores the settings that the
 API will use."""
@@ -104,7 +104,7 @@ as specified in locale.locale_alias.keys()
         """The SSL Certificate file location.
 
         This property holds the SSL Certificate file location that
-is to be used by the Secure Trading API.
+is to be used by the Trust Payments API.
 
         Args:
            value: (optional [string]) The location of the certificate file.
@@ -128,7 +128,7 @@ is to be used by the Secure Trading API.
         """The HTTP proxy data for the API.
 
         This property holds the HTTP proxy data that the API will
-use to connect to Secure Trading.
+use to connect to Trust Payments.
 
         Args:
            value: (optional [dict]) A dictionary with the key "https".
@@ -160,7 +160,7 @@ e.g: {'https':'https://IP:PORT'}"
 
         This property holds the http_max_allowed_connection_time,
 which is the maximum time in seconds allowed for HTTP
-connections that connect to Secure Trading.
+connections that connect to Trust Payments.
 
         Args:
            value: (optional [int or float]) The numeric value in seconds.
@@ -186,16 +186,16 @@ connections that connect to Secure Trading.
 
     @property
     def datacenterurl(self):
-        """The Secure Trading data center URL.
+        """The Trust Payments data center URL.
 
         This property holds the data center URL that the API will
-use to connect to Secure Trading.
+use to connect to Trust Payments.
 
         Args:
            value: (optional [string]) The URL of the data center.
 
         Returns:
-           The Secure Trading data center URL.
+           The Trust Payments data center URL.
 
         Usage:
           >>> config.datacenterurl = "https://webservices.securetrading.net"
@@ -211,16 +211,16 @@ use to connect to Secure Trading.
 
     @property
     def datacenterpath(self):
-        """The Secure Trading data center path.
+        """The Trust Payments data center path.
 
         This property holds the data center path that the API will
-use to connect to Secure Trading.
+use to connect to Trust Payments.
 
         Args:
            value: (optional [string]) The path of the data center.
 
         Returns:
-           The Secure Trading data center path.
+           The Trust Payments data center path.
 
         Usage:
           >>> config.datacenterpath = "/json/"
@@ -236,17 +236,17 @@ use to connect to Secure Trading.
 
     @property
     def jsonversion(self):
-        """The Secure Trading JSON interface version.
+        """The Trust Payments JSON interface version.
 
         This property holds the JSON interface version and will
-be passed to Secure Trading.
+be passed to Trust Payments.
 
         Args:
            value: (optional [string]) The version value to use.
            See further documentation for all allowed values.
 
         Returns:
-           The Secure Trading JSON interface version used.
+           The Trust Payments JSON interface version used.
 
         Usage:
            >>> config.jsonversion = "1.00"
@@ -264,7 +264,7 @@ be passed to Secure Trading.
         """The HTTP connection timeout for the API.
 
         This property holds the timeout for a single HTTP connection
-when connecting to Secure Trading.
+when connecting to Trust Payments.
 
         Args:
            value: (optional [int or float]) The numeric value in seconds.
@@ -293,7 +293,7 @@ when connecting to Secure Trading.
         """The HTTP receive timeout of the API.
 
         This property holds the HTTP receive timeout. HTTP connections
-to Secure Trading must respond within this limit.
+to Trust Payments must respond within this limit.
 
         Args:
            value: (optional [int or float]) The numeric value in seconds.
@@ -351,7 +351,7 @@ API will perform.
         """The HTTP retry sleep time for the API.
 
         This property holds the HTTP retry sleep time that the API
-will use to sleep between connection attempts to Secure Trading.
+will use to sleep between connection attempts to Trust Payments.
 
         Args:
            value: (optional [int or float]) The numeric value in seconds.
@@ -380,7 +380,7 @@ will use to sleep between connection attempts to Secure Trading.
         """A list of which HTTP response headers should be returned by the API.
 
         This property holds which HTTP response headers should be returned
-from Secure Trading on the Response object. If no headers are requested the
+from Trust Payments on the Response object. If no headers are requested the
 Response object will not contain the headers key
 
         Args:
@@ -418,7 +418,7 @@ returned"
         """The WebServices user's username used to connect.
 
         This property is used to hold your WebServices user's
-username that will be used to connect to Secure Trading
+username that will be used to connect to Trust Payments
 
         Args:
            value: (optional [string]) WebServices user's username.
@@ -442,7 +442,7 @@ username that will be used to connect to Secure Trading
         """The WebServices user's password used to connect.
 
         This property is used to hold your WebServices user's
-password that will be used to connect to Secure Trading.
+password that will be used to connect to Trust Payments.
 
         Args:
            value: (optional [string]) WebServices user's password.

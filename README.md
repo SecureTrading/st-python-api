@@ -1,4 +1,4 @@
-# Secure Trading Python API
+# Trust Payments Python API
 
 ## Installation
 
@@ -18,5 +18,5 @@ Please see https://docs.trustpayments.com/document/webservices-api/ for the most
 
 ## Bugs
 
-Please report any bugs to devapi@securetrading.com
+Please report any bugs to devapi@trustpayments.com
 

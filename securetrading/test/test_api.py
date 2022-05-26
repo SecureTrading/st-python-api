@@ -163,7 +163,7 @@ request specified'],
                                        'requestreference': '',
                                        'errormessage':
                                            'Incorrect usage of the \
-Secure Trading API'},
+Trust Payments API'},
                                       ]},
                        None),
 
@@ -178,7 +178,7 @@ request specified'],
                                        'requestreference': '',
                                        'errormessage':
                                            "Utilisation incorrecte de \
-l'API Secure Trading"},
+l'API Trust Payments"},
                                       ]},
                        None),  # French version of the config
                       ([], german_config, None, {"Headers": "data"}, None,
@@ -191,8 +191,8 @@ request specified'],
                                        'requesttypedescription': 'ERROR',
                                        'requestreference': '',
                                        'errormessage':
-                                           'Fehlerhafte Verwendung der Secure \
-Trading API'},
+                                           'Fehlerhafte Verwendung der Trust \
+Payments API'},
                                       ]},
                        None),  # German version of the config
 
@@ -204,7 +204,7 @@ Trading API'},
                               "requestreference": request2["requestreference"],
                               "errorcode": "7",
                               "errormessage": "An issue occured whilst trying to \
-connect to Secure Trading servers",
+connect to Trust Payments servers",
                               "errordata": []}
                              ]},
                        None),
@@ -241,7 +241,7 @@ connect to https://somewhere.com'.format(request2["requestreference"])]
                               "requestreference": request1["requestreference"],
                               'errorcode': "9",
                               'errormessage': 'Unknown error. If this persists\
- please contact Secure Trading',
+ please contact Trust Payments',
                               'errordata':
                                   ['Different request reference: sent ({0}) received\
  (NEWREFERENCE-866-98)'.format(request1["requestreference"])]}]},
