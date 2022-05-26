@@ -176,7 +176,6 @@ class Module_Test_Api(abstract_test.TestCase):
 
         for parent_key, requesttypdescription, updates in parents_required:
             if parent_key.startswith("settled_auth"):
-                print(parent_responses)
                 p_ref = parent_responses["order"]["transactionreference"]
                 updates["parenttransactionreference"] = p_ref
                 paypaltoken = parent_responses["order"]["paypaltoken"]

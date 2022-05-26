@@ -29,11 +29,11 @@ data = pkgutil.get_data('securetrading', dataFile).decode("utf-8")
 phrase_book = securetrading.util.json.loads(data)
 
 
-__title__ = 'Secure Trading Python API'
-__version__ = "1.0.20"
-__author__ = 'Secure Trading Ltd'
+__title__ = 'Trust Payments API'
+__version__ = "1.0.21"
+__author__ = 'Trust Payments Ltd'
 __license__ = 'MIT'
-__copyright__ = 'Copyright 2016 Secure Trading Ltd'
+__copyright__ = 'Copyright 2016 Trust Payments Ltd'
 
 version_information = ["Python",
                        platform.python_version(),
