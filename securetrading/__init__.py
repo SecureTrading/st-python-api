@@ -30,7 +30,7 @@ phrase_book = securetrading.util.json.loads(data)
 
 
 __title__ = 'Trust Payments API'
-__version__ = "1.0.21"
+__version__ = "1.0.22"
 __author__ = 'Trust Payments Ltd'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2016 Trust Payments Ltd'
