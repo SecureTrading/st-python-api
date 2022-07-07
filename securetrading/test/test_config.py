@@ -315,7 +315,10 @@ Available options: None, 1.00, 2.00"),
         for acceptcustomeroutput, exp_exception, exp_message in tests:
             if exp_exception is None:
                 config.acceptcustomeroutput = acceptcustomeroutput
-                self.assertEqual(acceptcustomeroutput, config.acceptcustomeroutput)
+                self.assertEqual(
+                    acceptcustomeroutput,
+                    config.acceptcustomeroutput,
+                )
             else:
                 six.assertRaisesRegex(self, exp_exception,
                                       exp_message,
