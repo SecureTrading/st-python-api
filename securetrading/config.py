@@ -49,7 +49,7 @@ default values that can then be overridden.
         self._ssl_certificate_file = None
         self._libraryversion = securetrading.__version__
         self._locale = "en_gb"
-        self._acceptcustomeroutput = "0"
+        self._acceptcustomeroutput = None
 
     @property
     def locale(self):
@@ -477,7 +477,7 @@ it might help to figure out whether response is successful or not.
         Args:
            value: (optional [string]) The acceptcustomeroutput is used
 to pass desired version of the "customeroutput" feature.
-"0" is default value, customeroutput is not returned in the API response.
+None is default value, customeroutput is not returned in the API response.
 "1.00" is old / deprecated version of the customeroutput result. Added for
 backward compatibility.
 "2.00" is used to populate "authorization" response item with "customeroutput"
@@ -499,7 +499,7 @@ customer output value
 
     @acceptcustomeroutput.setter
     def acceptcustomeroutput(self, value):
-        valid_values = ["0", "1.00", "2.00"]
+        valid_values = [None, "1.00", "2.00"]
         msg = "Invalid accept customer output value. \
 Available options: %s" % valid_values
         assert value in valid_values, msg

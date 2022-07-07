@@ -304,12 +304,12 @@ header is returned"
 
     def test_acceptcustomeroutput(self):
         config = securetrading.Config()
-        self.assertEqual("0", config.acceptcustomeroutput)
-        tests = [("0", None, ""),
+        self.assertEqual(None, config.acceptcustomeroutput)
+        tests = [(None, None, ""),
                  ("1.00", None, ""),
                  ("2.00", None, ""),
                  ("TESTING", Exception, "Invalid accept customer output value. \
-Available options: \['0', '1.00', '2.00'\]"),
+Available options: \[None, '1.00', '2.00'\]"),
                  ]
 
         for acceptcustomeroutput, exp_exception, exp_message in tests:

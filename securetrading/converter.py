@@ -37,8 +37,9 @@ class Converter(object):
                         "version": self.config.jsonversion,
                         "request": request,
                         "libraryversion": libraryversion,
-                        "acceptcustomeroutput": self.config.acceptcustomeroutput,
                         }
+        if self.config.acceptcustomeroutput is not None:
+            st_structure["acceptcustomeroutput"] = self.config.acceptcustomeroutput
 
         try:
             result = securetrading.util.json.dumps(st_structure)

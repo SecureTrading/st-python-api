@@ -34,7 +34,6 @@ class Test_Converter(abstract_test.TestCase):
                         "version": "1.00",
                         "libraryversion": self.lib_version,
                         "request": [],
-                        "acceptcustomeroutput": "0",
                         }
 
         auth_data = {"pan": "4111111111111111",
