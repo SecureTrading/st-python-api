@@ -500,7 +500,10 @@ customer output value
     @acceptcustomeroutput.setter
     def acceptcustomeroutput(self, value):
         valid_values = [None, "1.00", "2.00"]
+        error_values = ", ".join([
+            str(valid_value) for valid_value in valid_values
+        ])
         msg = "Invalid accept customer output value. \
-Available options: %s" % valid_values
+Available options: %s" % error_values
         assert value in valid_values, msg
         self._acceptcustomeroutput = value

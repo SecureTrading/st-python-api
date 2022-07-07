@@ -309,7 +309,7 @@ header is returned"
                  ("1.00", None, ""),
                  ("2.00", None, ""),
                  ("TESTING", Exception, "Invalid accept customer output value. \
-Available options: \[None, '1.00', '2.00'\]"),
+Available options: None, 1.00, 2.00"),
                  ]
 
         for acceptcustomeroutput, exp_exception, exp_message in tests:
