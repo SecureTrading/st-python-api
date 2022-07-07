@@ -24,6 +24,8 @@ class Test_Converter(abstract_test.TestCase):
         config.password = config_data["password"]
         config.jsonversion = config_data["jsonversion"]
         config.http_response_headers = config_data["http_response_headers"]
+        if "acceptcustomeroutput" in config_data:
+            config.acceptcustomeroutput = config_data["acceptcustomeroutput"]
         converter = securetrading.Converter(config)
         return converter
 
@@ -32,6 +34,7 @@ class Test_Converter(abstract_test.TestCase):
                         "version": "1.00",
                         "libraryversion": self.lib_version,
                         "request": [],
+                        "acceptcustomeroutput": "0",
                         }
 
         auth_data = {"pan": "4111111111111111",
@@ -49,6 +52,7 @@ class Test_Converter(abstract_test.TestCase):
                                  "password": "differentpassword",
                                  "jsonversion": "2.20",
                                  "http_response_headers": [],
+                                 "acceptcustomeroutput": "2.00",
                                  }
 
         currencyrate_data = {"requesttypedescription": "CURRENCYRATE",
@@ -64,6 +68,7 @@ class Test_Converter(abstract_test.TestCase):
                             "version": "2.20",
                             "libraryversion": self.lib_version,
                             "request": [currencyrate_data],
+                            "acceptcustomeroutput": "2.00",
                             }
 
         request_auth = self.get_securetrading_request(auth_data)

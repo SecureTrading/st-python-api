@@ -19,6 +19,7 @@ API will use."""
                  "_http_proxy", "_ssl_certificate_file",
                  "_libraryversion",
                  "_locale",
+                 "_acceptcustomeroutput",
                  ]
 
     def __init__(self):
@@ -48,6 +49,7 @@ default values that can then be overridden.
         self._ssl_certificate_file = None
         self._libraryversion = securetrading.__version__
         self._locale = "en_gb"
+        self._acceptcustomeroutput = "0"
 
     @property
     def locale(self):
@@ -460,3 +462,45 @@ password that will be used to connect to Trust Payments.
     @password.setter
     def password(self, value):
         self._password = value
+
+    @property
+    def acceptcustomeroutput(self):
+        """Allowed acceptcustomeroutput version.
+
+        This property holds the version of the desired customer output
+result.
+This feature might be useful in case of multi requests like:
+RISCDEC + THREEDQUERY + AUTH + SUBSCRIPTION
+"Main" response item will be populated with "customeroutput" field and
+it might help to figure out whether response is successful or not.
+
+        Args:
+           value: (optional [string]) The acceptcustomeroutput is used
+to pass desired version of the "customeroutput" feature.
+"0" is default value, customeroutput is not returned in the API response.
+"1.00" is old / deprecated version of the customeroutput result. Added for
+backward compatibility.
+"2.00" is used to populate "authorization" response item with "customeroutput"
+information.
+
+        Raises:
+           AssertionError: If the value is not a valid accept
+customer output value
+
+        Returns:
+           The current accept customer output setting.
+
+        Usage:
+           >>> config.acceptcustomeroutput = "2.00"
+           or
+           >>> acceptcustomeroutput = config.acceptcustomeroutput
+        """
+        return self._acceptcustomeroutput
+
+    @acceptcustomeroutput.setter
+    def acceptcustomeroutput(self, value):
+        valid_values = ["0", "1.00", "2.00"]
+        msg = "Invalid accept customer output value. \
+Available options: %s" % valid_values
+        assert value in valid_values, msg
+        self._acceptcustomeroutput = value

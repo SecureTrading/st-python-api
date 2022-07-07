@@ -37,6 +37,7 @@ class Converter(object):
                         "version": self.config.jsonversion,
                         "request": request,
                         "libraryversion": libraryversion,
+                        "acceptcustomeroutput": self.config.acceptcustomeroutput,
                         }
 
         try:
