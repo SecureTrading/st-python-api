@@ -442,6 +442,7 @@ whilst trying to connect to https://www.securetrading.com"]
                 exp_code, exp_response in tests:
             response = requests.Response()
             response._content = text
+            response.encoding = "UTF-8"
             response.status_code = status_code
             self.http_client.response = response
 

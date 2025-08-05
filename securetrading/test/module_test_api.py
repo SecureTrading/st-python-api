@@ -59,7 +59,6 @@ class Module_Test_Api(abstract_test.TestCase):
         # EUR ECOM SOFORT
         # USD ECOM ACH
         # Fraud Control
-        # Identity Check
         # GBP CFT VISA
         # GBP RECUR VISA
         # The site also needs a webservices user set up via MySt.
@@ -262,13 +261,6 @@ class Module_Test_Api(abstract_test.TestCase):
                               "baseamount": "100",
                               "customerfirstname": self.UNI,
                               },
-                  "IDSTANDARD": {"accounttypedescription": "IDENTITYCHECK",
-                                 "customercountryiso2a": "GB",
-                                 "customerfirstname": "John",
-                                 "customerlastname": "Doe",
-                                 "customerpremise": "1",
-                                 "customerpostcode": "AB12 3AB",
-                                 },
                   "SUBSCRIPTION": {"subscriptionunit": "DAY",
                                    "subscriptiontype": "INSTALLMENT",
                                    "subscriptionfrequency": "1",
@@ -851,18 +843,6 @@ class Module_Test_Api(abstract_test.TestCase):
                          }
 
         data = self.get_request_values("RISKDEC", extra_updates=extra_updates)
-        st_response = self.process_single(data)
-
-        exp_resp_data = {"errorcode": "0",
-                         "errormessage": "Ok",
-                         }
-
-        exp_raw_resp = [exp_resp_data]
-        self.validate(st_response["responses"], exp_raw_resp)
-
-    def test_identitycheck(self):
-        data = self.get_request_values("IDSTANDARD")
-
         st_response = self.process_single(data)
 
         exp_resp_data = {"errorcode": "0",

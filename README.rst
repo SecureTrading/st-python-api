@@ -18,7 +18,7 @@ We recommend using at least Python 2.7.9  as any version prior to this may give 
 Documentation
 ^^^^^^^^^^^^^
 
-Please see https://docs.trustpayments.com/document/webservices-api/ for the most up-to-date documentation.
+Please see https://help.trustpayments.com/hc/en-us/sections/360005821218-Webservices-API for the most up-to-date documentation.
 
 Bugs
 ^^^^
