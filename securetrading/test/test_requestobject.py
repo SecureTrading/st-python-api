@@ -18,14 +18,10 @@ class Test_Request(abstract_test_stobjects.Abstract_Test_StObjects):
 
     def test__set_cachetoken(self):
         exp1 = self.get_securetrading_request(
-            {"datacenterurl": "https://webservices.securetrading.net",
-             "datacenterpath": "/json/",
-             "cachetoken":
-                 "17-ae7e511172a07c2fb45db4c73388087e4d850777386a5d72029aaf895\
-87f3cf0"})
+            {"cachetoken": "17-ae7e511172a07c2fb45db4c73388087e4d850777386a5d7\
+2029aaf89587f3cf0"})
         exp2 = self.get_securetrading_request(
-            {"datacenterurl": "https://webservices.securetrading.net",
-             "cachetoken": "17-6a0287dd04497ba8dab257acbd983741f55410b5c709463\
+            {"cachetoken": "17-6a0287dd04497ba8dab257acbd983741f55410b5c709463\
 7d8c3f0fb57bd25ec"})
         exp3 = self.get_securetrading_request(
             {"cachetoken": "17-6a0287dd04497ba8dab257acbd983741f55410b5c709463\
@@ -34,6 +30,8 @@ class Test_Request(abstract_test_stobjects.Abstract_Test_StObjects):
         exp4 = self.get_securetrading_request(
             {"cachetoken": "eyJkYXRhY2VudGVydXJsIjogImh0dHBzOi8vd2Vic2VydmljZX\
 Muc2VjdXJldHJhZGluZy5uZXQiLCAiY2FjaGV0b2tlbiI6ICIxNy1hZTdlNTExMTcy"})
+        # JSON object lacks cachetoken key
+        exp5 = self.get_securetrading_request({"cachetoken": "e30K"})
 
         tests = [('eyJkYXRhY2VudGVycGF0aCI6ICIvanNvbi8iLCAiZGF0YWNlbnRlcnVybCI\
 6ICJodHRwczovL3dlYnNlcnZpY2VzLnNlY3VyZXRyYWRpbmcubmV0IiwgImNhY2hldG9rZW4iOiAiM\
@@ -46,6 +44,7 @@ ZDk4Mzc0MWY1NTQxMGI1YzcwOTQ2MzdkOGMzZjBmYjU3YmQyNWVjIn0=', exp2),
 57bd25ec', exp3),
                  ('eyJkYXRhY2VudGVydXJsIjogImh0dHBzOi8vd2Vic2VydmljZXMuc2VjdXJ\
 ldHJhZGluZy5uZXQiLCAiY2FjaGV0b2tlbiI6ICIxNy1hZTdlNTExMTcy', exp4),
+                 ('e30K', exp5),
                  ]
 
         for cachetoken, expected in tests:
