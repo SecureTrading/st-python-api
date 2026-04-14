@@ -32,3 +32,15 @@ test:py312:
   image: python:3.12
   variables:
     PY_VERSION: 312
+
+test:py313:
+  extends: .test-template
+  image: python:3.13
+  variables:
+    PY_VERSION: 313
+
+test:py314:
+  extends: .test-template
+  image: python:3.14
+  variables:
+    PY_VERSION: 314

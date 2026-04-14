@@ -39,14 +39,14 @@ the fields to send.
             data = securetrading.util.json.loads(
                 json_cachetoken.decode("utf-8")
                 )
-            result = data
-        except (ValueError, binascii.Error) as e:
-            result = {"cachetoken": cachetoken}
+            cachetoken = data["cachetoken"]
+        except (ValueError, binascii.Error, KeyError):
+            # Using original cachetoken value
+            pass
         debug = "{0} cachetoken being set as {1}".format(
-            self.get("requestreference"), result)
+            self.get("requestreference"), cachetoken)
         securetrading.util.logger.debug(debug)
-        for key, value in result.items():
-            self.__setitem__(key, value, use_set_method=False)
+        self.__setitem__("cachetoken", cachetoken, use_set_method=False)
 
 
 class Requests(Request):

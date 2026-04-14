@@ -137,7 +137,7 @@ class Test_Api(abstract_test.TestCase):
                       (request2, config1,
                        request2_str.format(request2["requestreference"]),
                        {"Headers": "data"}, None,
-                       "https://somewhere.com/some/other/path/",
+                       "https://test.com/some/path/",
                        {"alias": "test",
                         "libraryversion": self.lib_version,
                         "request": [{"requestreference":
