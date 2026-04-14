@@ -185,7 +185,6 @@ class Module_Test_Api(abstract_test.TestCase):
             data = self.get_request_values(requesttypdescription,
                                            updates)
             single_data = self.process_single(data)["responses"][0]
-            print(single_data)
             parent_responses[parent_key] = single_data
 
         return parent_responses
