@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import securetrading
 import securetrading.httpclient as httpclient
 import securetrading.phrasebook as phrasebook
+import six
 
 
 class Api(object):
@@ -63,8 +64,8 @@ details
             http_client = httpclient._get_client(request_reference,
                                                  self.config)
             request.verify()
-            url = request.get("datacenterurl", self.config.datacenterurl)
-            url += request.get("datacenterpath", self.config.datacenterpath)
+            url = six.moves.urllib.parse.urljoin(self.config.datacenterurl,
+                                                 self.config.datacenterpath)
             converter = securetrading.Converter(self.config)
             request_data = converter._encode(request)
             response, response_headers = http_client._main(url,
