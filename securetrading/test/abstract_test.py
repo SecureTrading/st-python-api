@@ -17,7 +17,7 @@ class TestCase(unittest.TestCase):
         self.utf8_uni = self.uni.encode("utf-8")
         self.byt_uni = self.uni.encode("latin-1")
         self.mock_receive = []
-        self.version = "1.0.24"
+        self.version = "1.0.25"
         self.lib_version = "python_{0}".format(self.version)
         self.version_info = "Python::{0}::{1}::{2}".format(
             platform.python_version(),
@@ -25,10 +25,13 @@ class TestCase(unittest.TestCase):
             platform.platform())
 
     def get_package_path(self):
-        loader = pkgutil.get_loader('securetrading')
         if util._is_python_2():
+            loader = pkgutil.get_loader('securetrading')
             package_path = loader.filename
         else:
+            import importlib.util
+            spec = importlib.util.find_spec("securetrading")
+            loader = spec.loader if spec else None
             package_path = os.path.split(loader.path)[0]
         return package_path
 
