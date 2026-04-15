@@ -81,6 +81,11 @@ class Test_Requests(Test_Request):
             [get_request({"a": "b"}),
              get_request(datacenter_path_dict)])
 
+        extra_headers_request = securetrading.Request(
+            extra_headers={"X-Custom": "value"})
+        extra_headers_request.update({"a": "b"})
+        requests6 = get_requests([extra_headers_request])
+
         tests = [(requests1, None, None, None, None),
                  (requests2, None, None, None, None),
                  (requests3, None, None, None, None),
@@ -93,6 +98,11 @@ outer 'securetrading.Requests' object"]),
                   "10", "10 The key 'datacenterpath' must be specifed \
 in the outer 'securetrading.Requests' object",
                   ["The key 'datacenterpath' must be specifed in the \
+outer 'securetrading.Requests' object"]),
+                 (requests6, securetrading.ApiError,
+                  "10", "10 The key 'extra_headers' must be specifed \
+in the outer 'securetrading.Requests' object",
+                  ["The key 'extra_headers' must be specifed in the \
 outer 'securetrading.Requests' object"]),
                  ]
 

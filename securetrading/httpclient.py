@@ -52,7 +52,8 @@ class GenericHTTPClient(object):
     def _receive(self):
         raise NotImplementedError
 
-    def _send(self, url, request_data, request_reference):
+    def _send(self, url, request_data, request_reference,
+              extra_headers=None):
         raise NotImplementedError
 
     def _connect(self, url):
@@ -61,7 +62,7 @@ class GenericHTTPClient(object):
     def _get_response_headers(self):
         raise NotImplementedError
 
-    def _get_headers(self, request_reference):
+    def _get_headers(self, request_reference, extra_headers=None):
         version_info = securetrading.version_info
         python_version = platform.python_version()
         user_agent = "Python-{0}".format(python_version)
@@ -74,6 +75,8 @@ class GenericHTTPClient(object):
                    "VERSIONINFO": version_info,
                    "Connection": "close",
                    }
+        if extra_headers:
+            headers.update(extra_headers)
         return headers
 
     def _verify_response(self, status_code, response, response_headers):
@@ -109,7 +112,8 @@ class GenericHTTPClient(object):
         try:
             recv_start = time.time()
             try:
-                self._send(url, request_data, request_reference)
+                self._send(url, request_data, request_reference,
+                           extra_headers=request.extra_headers)
                 (status_code, response) = self._receive()
                 response_headers = self._get_response_headers()
             except (securetrading.SecureTradingError) as e:
@@ -152,11 +156,13 @@ class HTTPRequestsClient(GenericHTTPClient):
         headers["User-Agent"] = user_agent
         return headers
 
-    def _send(self, url, request_data, request_reference):
+    def _send(self, url, request_data, request_reference,
+              extra_headers=None):
         auth = requests.auth.HTTPBasicAuth(
             self.config.username, self.config.password)
         method = "POST"
-        headers = self._get_headers(request_reference)
+        headers = self._get_headers(request_reference,
+                                    extra_headers=extra_headers)
         final = False
         start_time = time.time()
 

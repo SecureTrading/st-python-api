@@ -88,6 +88,7 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
         args = ("https://www.securetrading.com",
                 {"request": "data"},
                 "request_reference",
+                None,
                 )
 
         self.assertRaises(NotImplementedError, self.http_client._send, *args)
@@ -109,7 +110,7 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
             expected_agent_string = "Python-{0}".format(python_version)
 
         content_type = "application/json;charset=utf-8"
-        tests = [("abc", "v1", {"Content-Type": content_type,
+        tests = [("abc", "v1", None, {"Content-Type": content_type,
                                 "Accept": "application/json",
                                 "Accept-Encoding": "gzip",
                                 "REQUESTREFERENCE": "abc",
@@ -118,7 +119,7 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                                 'Connection': 'close',
                                 }
                   ),
-                 ("123456789", "v2", {"Content-Type": content_type,
+                 ("123456789", "v2", None, {"Content-Type": content_type,
                                       "Accept": "application/json",
                                       "Accept-Encoding": "gzip",
                                       "REQUESTREFERENCE": "123456789",
@@ -127,7 +128,7 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                                       'Connection': 'close',
                                       }
                   ),
-                 ("abcd12345", "v3", {"Content-Type": content_type,
+                 ("abcd12345", "v3", None, {"Content-Type": content_type,
                                       "Accept": "application/json",
                                       "Accept-Encoding": "gzip",
                                       "REQUESTREFERENCE": "abcd12345",
@@ -136,7 +137,7 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                                       'Connection': 'close',
                                       }
                   ),
-                 (self.uni, "v4", {"Content-Type": content_type,
+                 (self.uni, "v4", None, {"Content-Type": content_type,
                                    "Accept": "application/json",
                                    "Accept-Encoding": "gzip",
                                    "REQUESTREFERENCE": self.uni,
@@ -145,12 +146,25 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                                    'Connection': 'close',
                                    }
                   ),
+                 ("extra", "v5", {"X-Custom": "value"}, {
+                                   "Content-Type": content_type,
+                                   "Accept": "application/json",
+                                   "Accept-Encoding": "gzip",
+                                   "REQUESTREFERENCE": "extra",
+                                   "User-Agent": expected_agent_string,
+                                   "VERSIONINFO": "v5",
+                                   'Connection': 'close',
+                                   "X-Custom": "value",
+                                   }
+                  ),
                  ]
         tmp = securetrading.version_info
         try:
-            for request_reference, version_info, expected in tests:
+            for request_reference, version_info, extra_headers, expected \
+                    in tests:
                 securetrading.version_info = version_info
-                actual = self.http_client._get_headers(request_reference)
+                actual = self.http_client._get_headers(
+                    request_reference, extra_headers=extra_headers)
                 self.assertEqual(actual, expected)
         finally:
             # Rest for other tests
@@ -262,11 +276,13 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                 self.mock_method(exception=verify_raises)
             mock_client._close = self.mock_method(exception=close_raises)
 
+            mock_request = securetrading.Request()
+
             # As we have mocked all of the methods, the args have no value
             main_args = ("https://www.securetrading.com",
                          {"request": "data"},
                          "request_reference",
-                         "version_info")
+                         mock_request)
 
             if exp_exception:
                 self.check_st_exception(exp_exception, exp_data, exp_english,

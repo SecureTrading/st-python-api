@@ -13,7 +13,7 @@ request to be processed at a time. See the
 documentation for the usable keys.
 """
 
-    def __init__(self):
+    def __init__(self, extra_headers=None):
         """Initialises the Secure Trading Request object.
 
         This method will initialise the Secure Trading Request
@@ -26,6 +26,7 @@ the fields to send.
            >>> request.update(data)
         """
         super(Request, self).__init__()
+        self.extra_headers = extra_headers
         requestreference = securetrading.util._get_random(8)
         self["requestreference"] = "A{0}".format(requestreference)
         self["versioninfo"] = securetrading.version_info
@@ -73,6 +74,10 @@ the incorrect location within the object.
                     data = "The key '{0}' must be specifed in the outer \
 'securetrading.Requests' object".format(key)
                     raise securetrading.ApiError("10", data=[data])
+            if request.extra_headers is not None:
+                data = "The key 'extra_headers' must be specifed in the \
+outer 'securetrading.Requests' object"
+                raise securetrading.ApiError("10", data=[data])
 
     def _validate_requests(self, requests):
         for request in requests:
