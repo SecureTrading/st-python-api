@@ -140,7 +140,7 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                    'Connection': 'close',
                    }
                   ),
-                 (self.uni, "v4", None,
+                 (self.uni, "v4", {},
                   {"Content-Type": content_type,
                    "Accept": "application/json",
                    "Accept-Encoding": "gzip",
@@ -161,6 +161,17 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                    "X-Custom": "value",
                    }
                   ),
+                 ("extra", "v6",
+                  {"VERSIONINFO": "7", "Connection": "keep-alive"},
+                  {"Content-Type": content_type,
+                   "Accept": "application/json",
+                   "Accept-Encoding": "gzip",
+                   "REQUESTREFERENCE": "extra",
+                   "User-Agent": expected_agent_string,
+                   "VERSIONINFO": "7",
+                   'Connection': 'keep-alive',
+                   }
+                  ),
                  ]
         tmp = securetrading.version_info
         try:
@@ -168,7 +179,7 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                     in tests:
                 securetrading.version_info = version_info
                 actual = self.http_client._get_headers(
-                    request_reference, extra_headers=extra_headers)
+                    request_reference, extra_headers)
                 self.assertEqual(actual, expected)
         finally:
             # Rest for other tests
@@ -225,49 +236,55 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
 
         c2_exp_eng = "7 Connect Error"
 
-        tests = [(None, None, (200, "Success"), {"example": "headers"}, None,
-                  None, None, None, None, None, None, "Success",
+        tests = [({}, None, None, (200, "Success"), {"example": "headers"},
+                  None, None, None, None, None, None, None, "Success",
                   {"example": "headers"}),
-                 (Exception("Connect Error"), None, None, None, None, None,
+                 ({"extra_headers": None}, None, None, (200, "Success"),
+                  {"example": "headers"}, None, None, None, None, None, None,
+                  None, "Success", {"example": "headers"}),
+                 ({"extra_headers": {"name": "value"}}, None, None,
+                  (200, "Success"), {"example": "headers"}, None, None, None,
+                  None, None, None, None, "Success", {"example": "headers"}),
+                 ({}, Exception("Connect Error"), None, None, None, None, None,
                   None, ConnectionError, ["Connect Error"], c2_exp_eng,
                   "7", None, {}),
-                 (None, Exception("Send Error"), None, None, None, None, None,
-                  SendReceiveError, ["Send Error"], "4 Send Error", "4",
+                 ({}, None, Exception("Send Error"), None, None, None, None,
+                  None, SendReceiveError, ["Send Error"], "4 Send Error", "4",
                   None, {}),
-                 (None, None, None, None, Exception("Receive Error"), None,
+                 ({}, None, None, None, None, Exception("Receive Error"), None,
                   None, SendReceiveError,
                   ["Receive Error"], "4 Receive Error", "4", None, {}
                   ),
-                 (None, None, (200, "Verification Error"),
+                 ({}, None, None, (200, "Verification Error"),
                   {"error": "headers"}, None, Exception("Verify Error"),
                   None, Exception, None, "Verify Error", None, None, {}
                   ),
-                 (None, None, (200, "Closing Error"), {"error": "headers"},
+                 ({}, None, None, (200, "Closing Error"), {"error": "headers"},
                   None, None, Exception("Close Error"), Exception, None,
                   "Close Error", None, None, {}
                   ),
-                 (Exception("Connect Error"), None, None, None, None, None,
+                 ({}, Exception("Connect Error"), None, None, None, None, None,
                   Exception("Close"), ConnectionError, ["Connect Error"],
                   "7 Connect Error", "7", None, {}
                   # Connect Error takes precedence
                   ),
-                 (None, Exception("Send Error"), None, None, None, None,
+                 ({}, None, Exception("Send Error"), None, None, None, None,
                   Exception("Close"), Exception, None, "Close", None,
                   None, {}),  # The close Exception takes precedence
-                 (None, None, None, None, Exception("Receive Error"), None,
+                 ({}, None, None, None, None, Exception("Receive Error"), None,
                   Exception("Close"), Exception, None, "Close", None,
                   None, {}),  # The close Exception takes precedence
-                 (None, None, None, None, None, Exception("Verify Error"),
+                 ({}, None, None, None, None, None, Exception("Verify Error"),
                   Exception("Close"), Exception, None, "Close", None,
                   None, {}),  # The close Exception takes precedence
                  ]
 
         config = securetrading.Config()
 
-        for connect_raises, send_raises, receive_response, header_response,\
-                receive_raises, verify_raises, close_raises, exp_exception,\
-                exp_data, exp_english, exp_code, exp_response, exp_headers\
-                in tests:
+        for request_kwargs, connect_raises, send_raises, receive_response,\
+                header_response, receive_raises, verify_raises, close_raises,\
+                exp_exception, exp_data, exp_english, exp_code, exp_response, \
+                exp_headers in tests:
             mock_client = self.client(config)
             mock_client._connect = self.mock_method(exception=connect_raises)
             mock_client._send = self.mock_method(exception=send_raises)
@@ -280,7 +297,7 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                 self.mock_method(exception=verify_raises)
             mock_client._close = self.mock_method(exception=close_raises)
 
-            mock_request = securetrading.Request()
+            mock_request = securetrading.Request(**request_kwargs)
 
             # As we have mocked all of the methods, the args have no value
             main_args = ("https://www.securetrading.com",
@@ -296,6 +313,10 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                 actual_response, actual_headers = mock_client._main(*main_args)
                 self.assertEqual(actual_response, exp_response)
                 self.assertEqual(actual_headers, exp_headers)
+                exp_send_args = (("https://www.securetrading.com",
+                                  {"request": "data"}, "request_reference",
+                                  request_kwargs.get("extra_headers")), {})
+                self.assertEqual(self.mock_receive[1], exp_send_args)
 
 
 class Test_httpclient_HTTPRequestsClient(Test_httpclient_GenericHTTPClient):
@@ -354,49 +375,56 @@ whilst trying to connect to https://www.securetrading.com"]
 
         c17_exp_msg = c7_exp_msg
 
-        tests = [(-1, 50, [None], ConnectionError, c1_exp_data,
+        tests = [(None, -1, 50, [None], ConnectionError, c1_exp_data,
                   c1_exp_msg, "7", None),
-                 (0, 50, [ConnectTimeout], ConnectionError, c2_exp_data,
+                 (None, 0, 50, [ConnectTimeout], ConnectionError, c2_exp_data,
                   c2_exp_msg, "7", None),
-                 (1, 50, [ConnectTimeout] * 100, ConnectionError, c3_exp_data,
-                  c3_exp_msg, "7", None),
-                 (50, 50, ["Successful response"], None, None, None, None,
+                 (None, 1, 50, [ConnectTimeout] * 100, ConnectionError,
+                  c3_exp_data, c3_exp_msg, "7", None),
+                 (None, 50, 50, ["Successful response"], None, None, None,
+                  None, "Successful response"),
+                 (None, 50, 50, [ConnectTimeout, "Successful response"], None,
+                  None, None, None, "Successful response"),
+                 (securetrading.Request(), 50, 50, [ConnectTimeout,
+                  "Successful response"], None, None, None, None,
                   "Successful response"),
-                 (50, 50, [ConnectTimeout, "Successful response"], None, None,
-                  None, None, "Successful response"),
-                 (50, 50, [ConnectTimeout, ConnectTimeout,
-                           "Successful response"], None, None, None, None,
+                 (securetrading.Request(extra_headers={"name": "value"}),
+                  50, 50, [ConnectTimeout, "Successful response"], None,
+                  None, None, None, "Successful response"),
+                 (None, 50, 50, [ConnectTimeout, ConnectTimeout,
+                  "Successful response"], None, None, None, None,
                   "Successful response"),
-                 (50, -1, [None], ConnectionError, c7_exp_data, c7_exp_msg,
-                  "7", None),
-                 (50, 0, [ConnectTimeout], ConnectionError, c8_exp_data,
+                 (None, 50, -1, [None], ConnectionError, c7_exp_data,
+                  c7_exp_msg, "7", None),
+                 (None, 50, 0, [ConnectTimeout], ConnectionError, c8_exp_data,
                   c8_exp_msg, "7", None),
-                 (50, 1, [ConnectTimeout] * 2, ConnectionError, c9_exp_data,
-                  c9_exp_msg, "7", None),
-                 (50, 0, ["Successful response"], None, None, None, None,
-                  "Successful response"),
-                 (50, 1, ["Successful response"], None, None, None, None,
-                  "Successful response"),
-                 (50, 2, [ConnectTimeout, "Successful response"],
+                 (None, 50, 1, [ConnectTimeout] * 2, ConnectionError,
+                  c9_exp_data, c9_exp_msg, "7", None),
+                 (None, 50, 0, ["Successful response"], None, None, None,
+                  None, "Successful response"),
+                 (None, 50, 1, ["Successful response"], None, None, None,
+                  None, "Successful response"),
+                 (None, 50, 2, [ConnectTimeout, "Successful response"],
                   None, None, None, None, "Successful response"),
-                 (50, 50, [ConnectTimeout, RequestsConnectionError,
-                           "Successful response"],
+                 (None, 50, 50, [ConnectTimeout, RequestsConnectionError,
+                  "Successful response"],
                   None, None, None, None, "Successful response"),
-                 (50, 50, [Exception("Some other error")], ConnectionError,
-                  ["Some other error"], c14_exp_msg, "8", None),
-                 (50, 50, [ConnectTimeout, RequestsConnectionError,
-                           Exception("Some other error")],
+                 (None, 50, 50, [Exception("Some other error")],
+                  ConnectionError, ["Some other error"], c14_exp_msg, "8",
+                  None),
+                 (None, 50, 50, [ConnectTimeout, RequestsConnectionError,
+                  Exception("Some other error")],
                   ConnectionError, ["Some other error"], c15_exp_msg,
                   "8", None),
-                 (50, 50, [RequestException], ConnectionError, [""],
+                 (None, 50, 50, [RequestException], ConnectionError, [""],
                   "7", "7", None),
-                 (50, 50, [ConnectTimeout, RequestsConnectionError,
-                           RequestException], ConnectionError, [""],
+                 (None, 50, 50, [ConnectTimeout, RequestsConnectionError,
+                  RequestException], ConnectionError, [""],
                   "7", "7", None),
                  ]
         original_request = requests.request
         try:
-            for max_timeout, max_retry, request_responses, \
+            for request, max_timeout, max_retry, request_responses, \
                     exp_exception, exp_data, exp_english, exp_code, \
                     exp_response in tests:
                 config = securetrading.Config()
@@ -411,6 +439,7 @@ whilst trying to connect to https://www.securetrading.com"]
                 send_args = ("https://www.securetrading.com",
                              {"requestreference": "data"},
                              "request_reference",
+                             request,
                              )
                 if exp_exception:
                     self.check_st_exception(exp_exception, exp_data,

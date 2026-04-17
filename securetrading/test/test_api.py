@@ -54,9 +54,7 @@ class Test_Api(abstract_test.TestCase):
         german_config = self.get_config({"locale": "de_de",
                                          })
 
-        request2 = self.get_securetrading_request(
-            {"datacenterurl": "https://somewhere.com",
-             "datacenterpath": "/some/other/path/"})
+        request2 = self.get_securetrading_request({})
 
         request1_str = '{{"requestreference":"{0}",\
 "version":"1.00", "response":[{{"errorcode" : "0"}}]}}'
@@ -69,7 +67,7 @@ class Test_Api(abstract_test.TestCase):
 "version": "1.00", "response": [{{"errorcode" : "0"}}]}}'
 
         msg = "{0} Maximum time reached whilst trying to connect to {1}\
-".format(request2["requestreference"], request2["datacenterurl"])
+".format(request2["requestreference"], config1.datacenterurl)
         connection_error = connecterror("7", data=[msg])
 
         python_version = self.get_python_version()
@@ -142,8 +140,6 @@ class Test_Api(abstract_test.TestCase):
                         "libraryversion": self.lib_version,
                         "request": [{"requestreference":
                                      request2["requestreference"],
-                                     "datacenterurl": "https://somewhere.com",
-                                     "datacenterpath": "/some/other/path/",
                                      "versioninfo": self.version_info,
                                      }],
                         "version": "2.00",
@@ -154,8 +150,6 @@ class Test_Api(abstract_test.TestCase):
                         'responses': [{"errormessage": "Ok",
                                        "errorcode": "0"}]},
                        {"Headers": "data"}),
-                      # config with new values and request overrides
-                      # datacenterurl
                       ([], default_config, None, {"Headers": "data"}, None,
                        None, None, None, None,
                        {'requestreference': '',
@@ -222,7 +216,7 @@ connect to Trust Payments servers",
                               'errorcode': "4",
                               'errormessage': 'Send error',
                               "errordata": ['7 {0} Maximum time reached whilst trying to \
-connect to https://somewhere.com'.format(request2["requestreference"])]
+connect to {1}'.format(request2["requestreference"], config1.datacenterurl)]
                               }]
                         },
                        None),

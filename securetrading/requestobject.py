@@ -49,6 +49,18 @@ the fields to send.
         securetrading.util.logger.debug(debug)
         self.__setitem__("cachetoken", cachetoken, use_set_method=False)
 
+    @staticmethod
+    def _validate_datacenterurl(value):
+        msg = "'datacenterurl' should not be set in the Request object. Use \
+Config instead."
+        assert not value, msg
+
+    @staticmethod
+    def _validate_datacenterpath(value):
+        msg = "'datacenterpath' should not be set in the Request object. Use \
+Config instead."
+        assert not value, msg
+
 
 class Requests(Request):
     """This wraps single requests into one object.
@@ -68,14 +80,8 @@ the incorrect location within the object.
             data = "missing key requests"
             raise securetrading.ApiError("10", data=[data])
         for request in self.get("requests", []):
-            for key in ["datacenterurl", "datacenterpath"]:
-                # Ensures we can only override the url/path in one place
-                if key in request:
-                    data = "The key '{0}' must be specifed in the outer \
-'securetrading.Requests' object".format(key)
-                    raise securetrading.ApiError("10", data=[data])
-            if request.extra_headers is not None:
-                data = "The key 'extra_headers' must be specifed in the \
+            if request.extra_headers:
+                data = "The property 'extra_headers' must be specifed in the \
 outer 'securetrading.Requests' object"
                 raise securetrading.ApiError("10", data=[data])
 
