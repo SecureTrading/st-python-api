@@ -12,15 +12,27 @@ class Test_Request(abstract_test_stobjects.Abstract_Test_StObjects):
         self.class_ = securetrading.Request
 
     def test___init__(self):
-        tests = [({}, None),
-                 ({"extra_headers": None}, None),
-                 ({"extra_headers": {"name": "value"}}, {"name": "value"}),
+        tests = [({}, None, None, None),
+                 ({"extra_headers": None}, None, None, None),
+                 ({"extra_headers": {"name": "value"}}, {"name": "value"},
+                  None, None),
+                 ({"extra_headers": ["test"]}, None, AssertionError,
+                  "extra_headers must be a dictionary"),
+                 ({"extra_headers": "test"}, None, AssertionError,
+                  "extra_headers must be a dictionary"),
                  ]
-        for kwargs, exp_extra_headers in tests:
-            request = self.class_(**kwargs)
-            six.assertRegex(self, request["requestreference"], "A[a-z0-9]+")
-            self.assertEqual(securetrading.version_info, self.version_info)
-            self.assertEqual(request.extra_headers, exp_extra_headers)
+        for kwargs, exp_extra_headers, exp_exception, exp_message in tests:
+            if exp_exception is None:
+                request = self.class_(**kwargs)
+                six.assertRegex(self, request["requestreference"],
+                                "A[a-z0-9]+")
+                self.assertEqual(securetrading.version_info,
+                                 self.version_info)
+                self.assertEqual(request.extra_headers, exp_extra_headers)
+            else:
+                six.assertRaisesRegex(self, exp_exception, exp_message,
+                                      self.class_,
+                                      **kwargs)
 
     def test__set_cachetoken(self):
         exp1 = self.get_securetrading_request(

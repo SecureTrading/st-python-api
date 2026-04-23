@@ -26,10 +26,14 @@ the fields to send.
            >>> request.update(data)
         """
         super(Request, self).__init__()
-        self.extra_headers = extra_headers
         requestreference = securetrading.util._get_random(8)
         self["requestreference"] = "A{0}".format(requestreference)
         self["versioninfo"] = securetrading.version_info
+
+        if extra_headers:
+            msg = "extra_headers must be a dictionary"
+            assert isinstance(extra_headers, dict), msg
+        self.extra_headers = extra_headers
 
     def _set_cachetoken(self, cachetoken):
         try:

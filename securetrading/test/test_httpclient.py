@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import sys
 import unittest
 import securetrading
+from securetrading import ApiError
 from securetrading import ConnectionError
 from securetrading import SendReceiveError
 from securetrading.test import abstract_test
@@ -159,17 +160,6 @@ class Test_httpclient_GenericHTTPClient(abstract_test.TestCase):
                    "VERSIONINFO": "v5",
                    'Connection': 'close',
                    "X-Custom": "value",
-                   }
-                  ),
-                 ("extra", "v6",
-                  {"VERSIONINFO": "7", "Connection": "keep-alive"},
-                  {"Content-Type": content_type,
-                   "Accept": "application/json",
-                   "Accept-Encoding": "gzip",
-                   "REQUESTREFERENCE": "extra",
-                   "User-Agent": expected_agent_string,
-                   "VERSIONINFO": "7",
-                   'Connection': 'keep-alive',
                    }
                   ),
                  ]
@@ -375,6 +365,11 @@ whilst trying to connect to https://www.securetrading.com"]
 
         c17_exp_msg = c7_exp_msg
 
+        c18_exp_data = ["The following headers are defined by the library \
+and cannot be overridden by request extra_headers: VERSIONINFO"]
+        c18_exp_msg = "10 The following headers are defined by the library \
+and cannot be overridden by request extra_headers: VERSIONINFO"
+
         tests = [(None, -1, 50, [None], ConnectionError, c1_exp_data,
                   c1_exp_msg, "7", None),
                  (None, 0, 50, [ConnectTimeout], ConnectionError, c2_exp_data,
@@ -385,12 +380,14 @@ whilst trying to connect to https://www.securetrading.com"]
                   None, "Successful response"),
                  (None, 50, 50, [ConnectTimeout, "Successful response"], None,
                   None, None, None, "Successful response"),
-                 (securetrading.Request(), 50, 50, [ConnectTimeout,
+                 ({}, 50, 50, [ConnectTimeout,
                   "Successful response"], None, None, None, None,
                   "Successful response"),
-                 (securetrading.Request(extra_headers={"name": "value"}),
+                 ({"name": "value"},
                   50, 50, [ConnectTimeout, "Successful response"], None,
                   None, None, None, "Successful response"),
+                 ({"VERSIONINFO": "new"}, 50, 50, [None], ApiError,
+                  c18_exp_data, c18_exp_msg, "10", None),
                  (None, 50, 50, [ConnectTimeout, ConnectTimeout,
                   "Successful response"], None, None, None, None,
                   "Successful response"),
@@ -424,7 +421,7 @@ whilst trying to connect to https://www.securetrading.com"]
                  ]
         original_request = requests.request
         try:
-            for request, max_timeout, max_retry, request_responses, \
+            for extra_headers, max_timeout, max_retry, request_responses, \
                     exp_exception, exp_data, exp_english, exp_code, \
                     exp_response in tests:
                 config = securetrading.Config()
@@ -439,7 +436,7 @@ whilst trying to connect to https://www.securetrading.com"]
                 send_args = ("https://www.securetrading.com",
                              {"requestreference": "data"},
                              "request_reference",
-                             request,
+                             extra_headers,
                              )
                 if exp_exception:
                     self.check_st_exception(exp_exception, exp_data,

@@ -75,6 +75,13 @@ class GenericHTTPClient(object):
                    "Connection": "close",
                    }
         if extra_headers:
+            conflicting_headers = set(headers.keys())\
+                .intersection(extra_headers.keys())
+            if conflicting_headers:
+                data = "The following headers are defined by the library and \
+cannot be overridden by request extra_headers: {0}\
+".format(", ".join(sorted(conflicting_headers)))
+                raise securetrading.ApiError("10", data=[data])
             headers.update(extra_headers)
         return headers
 
