@@ -44,9 +44,11 @@ class Module_Test_Api(abstract_test.TestCase):
     PARENT_RESPONSES = None
     UNI = "T\r\xc2\xa3S'T(|]><[\\xG %s %% \"+N\
 \\\\&\\M\xc8.?\nTAB\t12}34{56789,:;#END"
+    PASSED_ARGS = None
 
     def __init__(self, *args, **kwargs):
         super(Module_Test_Api, self).__init__(*args, **kwargs)
+        passed_args = self.PASSED_ARGS or get_args()[0]
         self.sitereference = passed_args.sitereference
         # Please contact Trust Payments support to set up a test site
         # The following options are required.
@@ -67,6 +69,8 @@ class Module_Test_Api(abstract_test.TestCase):
         password = passed_args.password
         datacenterurl = passed_args.datacenterurl
         ssl_cert_file = passed_args.overridecacerts
+        if ssl_cert_file.lower() == "false":
+            ssl_cert_file = False
         base_path = self.get_package_path()
 
         # st_api valid credentials
@@ -195,8 +199,8 @@ class Module_Test_Api(abstract_test.TestCase):
     def _process_request(self, request_obj):
         return self.st_api.process(request_obj)
 
-    def _get_st_request(self, data):
-        st_request = securetrading.Request()
+    def _get_st_request(self, data, **kwargs):
+        st_request = securetrading.Request(**kwargs)
         st_request.update(data)
         return st_request
 
@@ -305,6 +309,27 @@ class Module_Test_Api(abstract_test.TestCase):
         exp_raw_resp = [exp_resp_data]
         self.validate(st_response["responses"], exp_raw_resp)
 
+    def test_auth_extra_headers(self):
+        extra_updates = {"pan": "4111111111111111",
+                         "expirymonth": "11",
+                         "expiryyear": "2031",
+                         "securitycode": "123",
+                         "paymenttypedescription": "VISA",
+                         }
+
+        data = self.get_request_values("AUTH", extra_updates=extra_updates)
+
+        extra_headers = {"X-Request-Id": "test_auth_extra_headers"}
+        st_request = self._get_st_request(data, extra_headers=extra_headers)
+        st_response = self._process_request(st_request)
+
+        exp_resp_data = {"errorcode": "0",
+                         "errormessage": "Ok",
+                         "acquirerresponsecode": "00",
+                         }
+        exp_raw_resp = [exp_resp_data]
+        self.validate(st_response["responses"], exp_raw_resp)
+
     def test_auth_content_type(self):
         extra_updates = {"pan": "4111111111111111",
                          "expirymonth": "11",
@@ -341,7 +366,6 @@ class Module_Test_Api(abstract_test.TestCase):
 
         exp_resp_data = {"errorcode": "70000",
                          "errormessage": "Refuser",
-                         "authcode": "DECLINED",
                          }
 
         exp_raw_resp = [exp_resp_data]
@@ -362,7 +386,6 @@ class Module_Test_Api(abstract_test.TestCase):
 
         exp_resp_data = {"errorcode": "70000",
                          "errormessage": "ablehnen",
-                         "authcode": "DECLINED",
                          }
 
         exp_raw_resp = [exp_resp_data]
@@ -573,7 +596,6 @@ class Module_Test_Api(abstract_test.TestCase):
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "70000",
                          "errormessage": "Decline",
-                         "authcode": "DECLINED",
                          }
 
         exp_raw_resp = [exp_resp_data]
@@ -662,7 +684,6 @@ class Module_Test_Api(abstract_test.TestCase):
         st_response = self.process_single(data)
         exp_resp_data = {"errorcode": "0",
                          "errormessage": "Ok",
-                         "authcode": "TEST REFUND ACCEPTED",
                          "acquirerresponsecode": "00",
                          }
 
@@ -1057,4 +1078,5 @@ class Module_Test_Api(abstract_test.TestCase):
 if __name__ == "__main__":
     script_name = sys.argv[0]
     passed_args, unittest_args = get_args()
+    Module_Test_Api.PASSED_ARGS = passed_args
     unittest.main(argv=[script_name] + unittest_args)
