@@ -13,7 +13,7 @@ request to be processed at a time. See the
 documentation for the usable keys.
 """
 
-    def __init__(self):
+    def __init__(self, extra_headers=None):
         """Initialises the Secure Trading Request object.
 
         This method will initialise the Secure Trading Request
@@ -29,6 +29,11 @@ the fields to send.
         requestreference = securetrading.util._get_random(8)
         self["requestreference"] = "A{0}".format(requestreference)
         self["versioninfo"] = securetrading.version_info
+
+        if extra_headers:
+            msg = "extra_headers must be a dictionary"
+            assert isinstance(extra_headers, dict), msg
+        self.extra_headers = extra_headers
 
     def _set_cachetoken(self, cachetoken):
         try:
@@ -47,6 +52,18 @@ the fields to send.
             self.get("requestreference"), cachetoken)
         securetrading.util.logger.debug(debug)
         self.__setitem__("cachetoken", cachetoken, use_set_method=False)
+
+    @staticmethod
+    def _validate_datacenterurl(value):
+        msg = "'datacenterurl' should not be set in the Request object. Use \
+Config instead."
+        assert not value, msg
+
+    @staticmethod
+    def _validate_datacenterpath(value):
+        msg = "'datacenterpath' should not be set in the Request object. Use \
+Config instead."
+        assert not value, msg
 
 
 class Requests(Request):
@@ -67,12 +84,10 @@ the incorrect location within the object.
             data = "missing key requests"
             raise securetrading.ApiError("10", data=[data])
         for request in self.get("requests", []):
-            for key in ["datacenterurl", "datacenterpath"]:
-                # Ensures we can only override the url/path in one place
-                if key in request:
-                    data = "The key '{0}' must be specifed in the outer \
-'securetrading.Requests' object".format(key)
-                    raise securetrading.ApiError("10", data=[data])
+            if request.extra_headers:
+                data = "The property 'extra_headers' must be specifed in the \
+outer 'securetrading.Requests' object"
+                raise securetrading.ApiError("10", data=[data])
 
     def _validate_requests(self, requests):
         for request in requests:

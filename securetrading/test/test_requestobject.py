@@ -12,9 +12,27 @@ class Test_Request(abstract_test_stobjects.Abstract_Test_StObjects):
         self.class_ = securetrading.Request
 
     def test___init__(self):
-        request = self.class_()
-        six.assertRegex(self, request["requestreference"], "A[a-z0-9]+")
-        self.assertEqual(securetrading.version_info, self.version_info)
+        tests = [({}, None, None, None),
+                 ({"extra_headers": None}, None, None, None),
+                 ({"extra_headers": {"name": "value"}}, {"name": "value"},
+                  None, None),
+                 ({"extra_headers": ["test"]}, None, AssertionError,
+                  "extra_headers must be a dictionary"),
+                 ({"extra_headers": "test"}, None, AssertionError,
+                  "extra_headers must be a dictionary"),
+                 ]
+        for kwargs, exp_extra_headers, exp_exception, exp_message in tests:
+            if exp_exception is None:
+                request = self.class_(**kwargs)
+                six.assertRegex(self, request["requestreference"],
+                                "A[a-z0-9]+")
+                self.assertEqual(securetrading.version_info,
+                                 self.version_info)
+                self.assertEqual(request.extra_headers, exp_extra_headers)
+            else:
+                six.assertRaisesRegex(self, exp_exception, exp_message,
+                                      self.class_,
+                                      **kwargs)
 
     def test__set_cachetoken(self):
         exp1 = self.get_securetrading_request(
@@ -54,6 +72,20 @@ ldHJhZGluZy5uZXQiLCAiY2FjaGV0b2tlbiI6ICIxNy1hZTdlNTExMTcy', exp4),
                 del obj["requestreference"]  # Unique for every request object
             self.assertEqual(request, expected)
 
+    def test__validate_datacenterurl(self):
+        exp_message = "'datacenterurl' should not be set in the Request \
+object. Use Config instead."
+        six.assertRaisesRegex(self, AssertionError, exp_message,
+                              self.class_().update,
+                              {"datacenterurl": "test"})
+
+    def test__validate_datacenterpath(self):
+        exp_message = "'datacenterpath' should not be set in the Request \
+object. Use Config instead."
+        six.assertRaisesRegex(self, AssertionError, exp_message,
+                              self.class_().update,
+                              {"datacenterpath": "test"})
+
 
 class Test_Requests(Test_Request):
 
@@ -72,27 +104,22 @@ class Test_Requests(Test_Request):
         requests3 = get_requests(
             [get_request({"a": "b"}),
              get_request({"c": "d"})])
-        datacenter_url_dict = {"datacenterurl": "url"}
+
         requests4 = get_requests(
-            [get_request({"a": "b"}),
-             get_request(datacenter_url_dict)])
-        datacenter_path_dict = {"datacenterpath": "path"}
+            [get_request({"a": "b"})],
+            extra_headers={"name": "value"})
+
         requests5 = get_requests(
-            [get_request({"a": "b"}),
-             get_request(datacenter_path_dict)])
+            [get_request({"a": "b"}, extra_headers={"name": "value"})])
 
         tests = [(requests1, None, None, None, None),
                  (requests2, None, None, None, None),
                  (requests3, None, None, None, None),
-                 (requests4, securetrading.ApiError,
-                  "10", "10 The key 'datacenterurl' must be specifed \
-in the outer 'securetrading.Requests' object",
-                  ["The key 'datacenterurl' must be specifed in the \
-outer 'securetrading.Requests' object"]),
+                 (requests4, None, None, None, None),
                  (requests5, securetrading.ApiError,
-                  "10", "10 The key 'datacenterpath' must be specifed \
+                  "10", "10 The property 'extra_headers' must be specifed \
 in the outer 'securetrading.Requests' object",
-                  ["The key 'datacenterpath' must be specifed in the \
+                  ["The property 'extra_headers' must be specifed in the \
 outer 'securetrading.Requests' object"]),
                  ]
 

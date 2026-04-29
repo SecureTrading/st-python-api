@@ -72,13 +72,13 @@ class TestCase(unittest.TestCase):
             func = f3
         return func
 
-    def get_securetrading_request(self, request_dict):
-        securetrading_request = securetrading.Request()
+    def get_securetrading_request(self, request_dict, **kwargs):
+        securetrading_request = securetrading.Request(**kwargs)
         securetrading_request.update(request_dict)
         return securetrading_request
 
-    def get_securetrading_requests(self, request_list):
-        securetrading_requests = securetrading.Requests()
+    def get_securetrading_requests(self, request_list, **kwargs):
+        securetrading_requests = securetrading.Requests(**kwargs)
         securetrading_requests["requests"] = request_list
         return securetrading_requests
 
